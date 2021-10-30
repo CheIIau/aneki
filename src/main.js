@@ -26,7 +26,6 @@ new Vue({
     initializeApp(firebaseConfig);
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
-      console.log(user);
       if (user) {
         this.$store.dispatch('autoLoginUser', user);
       } else {

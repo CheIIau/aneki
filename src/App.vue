@@ -1,48 +1,15 @@
 <template>
   <v-app>
-    <!-- <v-navigation-drawer temporary
-                         app
-                         v-model="drawer"
-                          src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
-                         absolute>
-      <v-card class="mx-auto"
-              max-width="300"
-              tile>
-        <v-list dense>
-          <v-subheader>Анеки</v-subheader>
-          <v-list-item-group color="primary">
-            <v-list-item v-for="link of links"
-                         :key="link.title"
-                         :to="link.url"
-                         link>
-              <v-list-item-icon>
-                <v-icon>{{link.icon}}</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>{{link.title}}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-card>
-      <template v-slot:append>
-        <div class="pa-2">
-          <v-btn block>
-            Logout
-          </v-btn>
-        </div>
-      </template>
-    </v-navigation-drawer> -->
-
     <v-card class="mx-auto"
-            height="300"
+            tile
             width="300">
-      <v-navigation-drawer absolute
+      <v-navigation-drawer app
+                           v-model="drawer"
                            dark
                            src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
-                           width="100%"
                            temporary>
         <v-list>
+          <v-subheader>Анеки</v-subheader>
           <v-list-item v-for="link of links"
                        :key="link.title"
                        :to="link.url"
@@ -50,12 +17,29 @@
             <v-list-item-icon>
               <v-icon>{{ link.icon }}</v-icon>
             </v-list-item-icon>
-
             <v-list-item-content>
               <v-list-item-title>{{ link.title }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
+        <template v-slot:append>
+          <div class="pa-2"
+               v-if="isUserLoggedIn">
+            <v-btn block
+                   @click="onLogout">
+              <v-icon>mdi-logout</v-icon>
+              Выйти
+            </v-btn>
+          </div>
+          <div class="pa-2"
+               v-else>
+            <v-btn block
+                   :to="'/login'">
+              <v-icon>mdi-login</v-icon>
+              Войти
+            </v-btn>
+          </div>
+        </template>
       </v-navigation-drawer>
     </v-card>
     <v-app-bar app
@@ -98,20 +82,23 @@
                              indeterminate></v-progress-circular>
       </div>
       <v-spacer></v-spacer>
-      <v-btn text
-             v-if="isUserLoggedIn && !loadingUser"
-             @click="onLogout">
-        <span class="mr-2">Выйти</span>
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-      <v-btn text
-             v-else-if="!isUserLoggedIn && !loadingUser"
-             @click="onLogout">
-        <span class="mr-2">Войти</span>
-        <v-icon>mdi-login</v-icon>
-      </v-btn>
-      <div class="blank"
-           v-else>&nbsp;</div>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn v-if="isUserLoggedIn && !loadingUser"
+               @click="onLogout"
+               text>
+          <span class="mr-2">Выйти</span>
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
+        <v-btn v-else-if="!isUserLoggedIn && !loadingUser"
+               :to="'/login'"
+               text>
+          <span class="mr-2">Войти</span>
+          <v-icon>mdi-login</v-icon>
+        </v-btn>
+        <div class="blank"
+             v-else>&nbsp;</div>
+      </v-toolbar-items>
+
     </v-app-bar>
     <v-main class="mt-6">
       <router-view />
@@ -121,7 +108,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'App',
   data: () => ({
@@ -145,6 +132,13 @@ export default {
   },
   created() {
     this.$store.dispatch('setLoadingUser', true);
+  },
+  methods: {
+    ...mapActions(['logoutUser']),
+    onLogout() {
+      this.logoutUser();
+      this.$router.push('/');
+    },
   },
 };
 </script>

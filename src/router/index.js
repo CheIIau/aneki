@@ -4,6 +4,8 @@ import Home from '@/views/Home.vue';
 import Favorites from '@/views/Favorites.vue';
 import New from '@/views/New.vue';
 import Registration from '@/views/Registration.vue';
+import Login from '@/views/Login.vue';
+import E404 from '@/views/E404.vue';
 import AuthGuard from './auth-guard';
 
 Vue.use(VueRouter);
@@ -30,6 +32,15 @@ const routes = [
     path: '/registration',
     name: 'Registration',
     component: Registration,
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: E404,
   },
 ];
 

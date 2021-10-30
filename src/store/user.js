@@ -1,4 +1,10 @@
-import { getAuth, createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from 'firebase/auth';
 
 class User {
   constructor(id, nickname) {
@@ -34,7 +40,7 @@ export default {
       return state.user !== null;
     },
     getUserName(state) {
-      return state.user.nickname;
+      return state.user?.nickname;
     },
   },
   actions: {
@@ -59,6 +65,24 @@ export default {
         throw error;
       }
     },
+    async loginUser({ commit }, { email, password }) {
+      commit('setLoading', true);
+      commit('setLoadingUser', true);
+      try {
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+          const user = userCredential.user;
+          commit('setUser', new User(user.uid, user.displayName));
+          commit('setLoading', false);
+          commit('setLoadingUser', false);
+        });
+      } catch (error) {
+        commit('setLoading', false);
+        commit('setLoadingUser', false);
+        commit('setError', error.message);
+        throw error;
+      }
+    },
 
     autoLoginUser({ commit }, payload) {
       commit('setUser', new User(payload.uid, payload.displayName));
@@ -68,12 +92,10 @@ export default {
 
     logoutUser({ commit }) {
       const auth = getAuth();
-      signOut(auth)
-        .then(() => {})
-        .catch((error) => {
-          console.log(error.message);
-          throw error;
-        });
+      signOut(auth).catch((error) => {
+        console.log(error.message);
+        throw error;
+      });
       localStorage.removeItem('user');
       commit('setUser', null);
     },

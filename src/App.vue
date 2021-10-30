@@ -103,6 +103,20 @@
     <v-main class="mt-6">
       <router-view />
     </v-main>
+    <template v-if="error">
+      <v-snackbar v-model="snackbar"
+                  :multi-line="true"
+                  color="error">
+        {{ error }}
+        <template v-slot:action>
+          <v-btn dark
+                 text
+                 @click="clearError">
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </template>
   </v-app>
 
 </template>
@@ -112,6 +126,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'App',
   data: () => ({
+    snackbar: true,
     drawer: false,
   }),
   computed: {
@@ -131,10 +146,10 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('setLoadingUser', true);
+    this.setLoadingUser(true);
   },
   methods: {
-    ...mapActions(['logoutUser']),
+    ...mapActions(['logoutUser','setLoadingUser', 'clearError']),
     onLogout() {
       this.logoutUser();
       this.$router.push('/');

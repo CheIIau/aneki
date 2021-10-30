@@ -33,9 +33,6 @@ export default {
     localUser() {
       return JSON.parse(localStorage.getItem('user'));
     },
-    // userId() {
-    //   return JSON.parse(localStorage.getItem('user')).uid;
-    // },
     isUserLoggedIn(state) {
       return state.user !== null;
     },
@@ -44,10 +41,11 @@ export default {
     },
   },
   actions: {
-    setUser(store, userName) {
-      localStorage.setItem('userName', userName);
-    },
     async registerUser({ commit }, { email, password, nickname }) {
+      commit('clearError');
+      commit('setLoading', true);
+      commit('setLoadingUser', true);
+
       try {
         const auth = getAuth();
         await createUserWithEmailAndPassword(auth, email, password)
@@ -59,9 +57,12 @@ export default {
             updateProfile(auth.currentUser, {
               displayName: nickname,
             });
+            commit('setLoadingUser', false);
           });
       } catch (error) {
-        console.log(error.message, 'хуй пизда');
+        commit('setLoading', false);
+        commit('setLoadingUser', false);
+        commit('setError', error.message);
         throw error;
       }
     },
@@ -85,15 +86,16 @@ export default {
     },
 
     autoLoginUser({ commit }, payload) {
-      commit('setUser', new User(payload.uid, payload.displayName));
-      commit('setLocalUser', new User(payload.uid, payload.displayName));
+      const user = new User(payload.uid, payload.displayName);
+      commit('setUser', user);
+      commit('setLocalUser', user);
       commit('setLoadingUser', false);
     },
 
     logoutUser({ commit }) {
       const auth = getAuth();
       signOut(auth).catch((error) => {
-        console.log(error.message);
+        commit('setError', error.message);
         throw error;
       });
       localStorage.removeItem('user');

@@ -1,14 +1,15 @@
 <template>
   <v-app>
-    <v-flex xs10
+    <v-flex v-if="!loading"
+            xs10
             offset-xs1
             sm8
             offset-sm2
             md6
             offset-md3>
       <v-card class="max-auto mb-7"
-              v-for="anek in aneks"
-              :key="anek.body">
+              v-for="(anek,i) in aneks"
+              :key="i">
         <v-card-text>
           <p class="text-h4 text--primary">
             {{anek.title}}
@@ -24,7 +25,19 @@
         </v-card-text>
       </v-card>
     </v-flex>
-
+    <div v-else>
+      <v-container grid-list-xs>
+        <v-flex d-flex
+                justify-center
+                xs-12
+                class="pt-9 mt-9">
+          <v-progress-circular :size="100"
+                               :width="4"
+                               color="primary"
+                               indeterminate></v-progress-circular>
+        </v-flex>
+      </v-container>
+    </div>
   </v-app>
 </template>
 
@@ -32,6 +45,9 @@
 import { mapGetters } from 'vuex';
 
 export default {
-  computed: { ...mapGetters({ aneks: 'getAneks' }) },
+  computed: { ...mapGetters({ aneks: 'getAneks', loading: 'loading' }) },
+  created() {
+    this.$store.dispatch('fetchAneks');
+  },
 };
 </script>

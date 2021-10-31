@@ -58,8 +58,9 @@
         </router-link>
         <transition appear
                     appear-active-class="fade-enter-active">
-          <div class='app-bar_title'>
-            неки
+          <div class='app-bar_title pointer'>
+            <router-link tag="span"
+                         to="/">неки</router-link>
           </div>
         </transition>
       </div>
@@ -101,7 +102,12 @@
 
     </v-app-bar>
     <v-main class="mt-6">
-      <router-view />
+      <transition name="fade-transition"
+                  mode="out-in"
+                  appear
+                  appear-active-class="fade-transition">
+        <router-view />
+      </transition>
     </v-main>
     <template v-if="error">
       <v-snackbar v-model="snackbar"
@@ -149,7 +155,7 @@ export default {
     this.setLoadingUser(true);
   },
   methods: {
-    ...mapActions(['logoutUser','setLoadingUser', 'clearError']),
+    ...mapActions(['logoutUser', 'setLoadingUser', 'clearError']),
     onLogout() {
       this.logoutUser();
       this.$router.push('/');
@@ -159,6 +165,10 @@ export default {
 </script>
 
 <style scoped>
+.pointer {
+  cursor: pointer;
+}
+
 .blank {
   height: 100%;
   margin-right: 9em;

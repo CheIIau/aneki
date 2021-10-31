@@ -19,7 +19,8 @@
                         name="title"
                         label="Заголовок анека (если нужен)"
                         type="text"
-                        v-model="title"></v-text-field>
+                        v-model="title"
+                        :rules="titleRules"></v-text-field>
           <v-textarea prepend-icon="mdi-lock"
                       name="body"
                       label="Анекдот"
@@ -52,18 +53,25 @@ export default {
       title: '',
       body: '',
       valid: false,
+      titleRules: [(v) => v.length <= 20 || 'Заголовок должен быть короче 20 символов'],
     };
   },
   computed: {
     loading() {
-      return false;
+      return this.$store.getters.loading;
     },
   },
   methods: {
     ...mapActions({ addAnek: 'addAnek' }),
     createAnek() {
-      this.addAnek({ title: this.title, body: this.body });
-      this.$router.push('/');
+      if (this.$refs.form.validate()) {
+        const anek = {
+          title: this.title,
+          body: this.body,
+        };
+        this.addAnek(anek);
+        this.$router.push('/');
+      }
     },
   },
 };

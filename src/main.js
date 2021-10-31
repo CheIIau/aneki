@@ -22,6 +22,7 @@ new Vue({
       messagingSenderId: '27394706899',
       appId: '1:27394706899:web:31a7aa8c5cad1549fb7326',
       measurementId: 'G-3YLWDV868S',
+      databaseURL: 'aneki-af274-default-rtdb.europe-west1.firebasedatabase.app',
     };
     initializeApp(firebaseConfig);
     const auth = getAuth();

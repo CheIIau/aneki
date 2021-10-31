@@ -1,10 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-useless-escape */
-// module.exports = {
-//   transpileDependencies: ["vuetify"],
-// };
-// const CompressionPlugin = require('compression-webpack-plugin');
-
 module.exports = {
   pluginOptions: {
     webpackBundleAnalyzer: {
@@ -25,22 +18,13 @@ module.exports = {
       },
     },
   },
-  // configureWebpack: (config) => {
-  //   if (process.env.NODE_ENV === 'production') {
-  //     return {
-  //       plugins: [
-  //         new CompressionPlugin({
-  //           test: / \. js $ | \ .html $ |. \ css /, // соответствие имени файла
-  //           threshold: 10240, // Сжать данные более 10k
-  //           deleteOriginalAssets: false, // Не удалять исходные файлы
-  //         }),
-  //       ],
-  //     };
-  //   }
-  // },
   productionSourceMap: false,
 
   chainWebpack: (config) => {
+    config.plugin('html').tap((args) => {
+      args[0].title = 'Aneki';
+      return args;
+    });
     config.optimization.minimize(true);
     config.plugin('VuetifyLoaderPlugin').tap(() => [
       {

@@ -1,10 +1,12 @@
 import { getDatabase, ref, set, push, onValue } from 'firebase/database';
 
 class Anek {
-  constructor(title, body, author, id = null) {
+  constructor(title, body, author, time, rating = 0, id = null) {
     this.title = title;
     this.body = body;
     this.author = author;
+    this.time = time;
+    this.rating = rating;
     this.id = id;
   }
 }
@@ -17,8 +19,8 @@ export default {
     },
   },
   mutations: {
-    addAnek(state, { title, body, author }) {
-      state.aneks.push({ title, body, author });
+    addAnek(state, { title, body, author, time }) {
+      state.aneks.push({ title, body, author, time });
     },
     loadAneks(state, payload) {
       state.aneks = payload;
@@ -39,8 +41,9 @@ export default {
           title,
           body,
           author: userName,
+          time: Date.now(),
         });
-        commit('addAnek', { title, body, author: userName });
+        commit('addAnek', { title, body, author: userName, time: Date.now() });
         commit('setLoading', false);
       } catch (error) {
         commit('setError', error.message);
@@ -59,7 +62,8 @@ export default {
           const aneks = snapshot.val();
           Object.keys(aneks).forEach((key) => {
             const anek = aneks[key];
-            resultAneks.push(new Anek(anek.title, anek.body, anek.author, key));
+            resultAneks.push(new Anek(anek.title, anek.body, anek.author, anek.time, key));
+            console.log(anek);
           });
         });
         commit('loadAneks', resultAneks);

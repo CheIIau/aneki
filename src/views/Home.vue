@@ -19,8 +19,9 @@
           </div>
           <v-row class="mr-1 mb-1 mt-2"
                  app>
+            <v-card-subtitle>Автор: {{anek.author}} </v-card-subtitle>
             <v-spacer></v-spacer>
-            <div>Автор: {{anek.author}}</div>
+            <v-card-subtitle> Выложено: {{formatDate(anek.time)}} </v-card-subtitle>
           </v-row>
         </v-card-text>
       </v-card>
@@ -43,11 +44,15 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { formatDate } from '@/functions/index.js';
 
 export default {
   computed: { ...mapGetters({ aneks: 'getAneks', loading: 'loading' }) },
   created() {
     this.$store.dispatch('fetchAneks');
+  },
+  methods: {
+    formatDate,
   },
 };
 </script>

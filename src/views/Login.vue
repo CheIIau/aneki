@@ -34,7 +34,7 @@
             <v-btn color="primary"
                    @click="onSubmit"
                    :loading="loading"
-                   :disabled="!valid || loading">Login</v-btn>
+                   :disabled="!valid || loading">Войти</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>

@@ -23,7 +23,7 @@
           </v-list-item>
         </v-list>
         <template v-slot:append>
-          <div class="pa-2"
+          <div class="pa-2 mb-8"
                v-if="isUserLoggedIn">
             <v-btn block
                    @click="onLogout">
@@ -31,7 +31,7 @@
               Выйти
             </v-btn>
           </div>
-          <div class="pa-2"
+          <div class="pa-2 mb-8"
                v-else>
             <v-btn block
                    :to="'/login'">

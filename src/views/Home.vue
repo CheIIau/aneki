@@ -21,8 +21,26 @@
                  app>
             <v-card-subtitle>Автор: {{anek.author}} </v-card-subtitle>
             <v-spacer></v-spacer>
-            <v-card-subtitle> Выложено: {{formatDate(anek.time)}} </v-card-subtitle>
+            <v-card-subtitle class="d-none d-sm-flex"> Выложено: {{formatDate(anek.time)}} </v-card-subtitle>
           </v-row>
+          <v-card-actions>
+            <v-btn icon
+                   color="grey">
+              <v-icon>mdi-bookmark</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn icon
+                   :color="arrowUpColor"
+                   @click="onChangeVote(anek.id, 'up')">
+              <v-icon>mdi-arrow-up-bold</v-icon>
+            </v-btn>
+            <span> {{anek.rating}}</span>
+            <v-btn icon
+                   :color="arrowDownColor"
+                   @click="onChangeVote(anek.id, 'down')">
+              <v-icon>mdi-arrow-down-bold</v-icon>
+            </v-btn>
+          </v-card-actions>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -43,16 +61,30 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { formatDate } from '@/functions/index.js';
 
 export default {
-  computed: { ...mapGetters({ aneks: 'getAneks', loading: 'loading' }) },
+  computed: {
+    ...mapGetters({ aneks: 'getAneks', loading: 'loading', isUserLoggedIn: 'isUserLoggedIn' }),
+    arrowUpColor() {
+      return this.isUserLoggedIn ? 'green' : 'green lighten-4';
+    },
+    arrowDownColor() {
+      return this.isUserLoggedIn ? 'deep-orange' : 'deep-orange lighten-4';
+    },
+  },
   created() {
     this.$store.dispatch('fetchAneks');
   },
   methods: {
+    ...mapActions(['changeVote']),
     formatDate,
+    onChangeVote(id, vote) {
+      if (this.isUserLoggedIn) {
+        this.changeVote({ id, vote });
+      }
+    },
   },
 };
 </script>

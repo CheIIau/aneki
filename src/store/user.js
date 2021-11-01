@@ -58,6 +58,7 @@ export default {
               displayName: nickname,
             });
             commit('setLoadingUser', false);
+            commit('setLoading', false);
           });
       } catch (error) {
         commit('setLoading', false);
@@ -69,20 +70,20 @@ export default {
     async loginUser({ commit }, { email, password }) {
       commit('setLoading', true);
       commit('setLoadingUser', true);
-      try {
-        const auth = getAuth();
-        signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+      const auth = getAuth();
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
           const user = userCredential.user;
           commit('setUser', new User(user.uid, user.displayName));
           commit('setLoading', false);
           commit('setLoadingUser', false);
+        })
+        .catch((error) => {
+          commit('setLoading', false);
+          commit('setLoadingUser', false);
+          commit('setError', error.message);
+          throw error;
         });
-      } catch (error) {
-        commit('setLoading', false);
-        commit('setLoadingUser', false);
-        commit('setError', error.message);
-        throw error;
-      }
     },
 
     autoLoginUser({ commit }, payload) {

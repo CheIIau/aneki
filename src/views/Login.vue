@@ -73,11 +73,7 @@ export default {
           .then(() => {
             this.$router.push('/');
           })
-          .catch(() => {
-            setTimeout(() => {
-              this.$store.dispatch('clearError');
-            }, 4000);
-          });
+          .catch(() => {});
       }
     },
   },

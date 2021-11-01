@@ -46,7 +46,8 @@
             <v-spacer></v-spacer>
             <v-btn color="primary"
                    @click="onSubmit"
-                   :disabled="!valid">Регистрация</v-btn>
+                   :loading="loading"
+                   :disabled="!valid || loading">Регистрация</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -89,14 +90,7 @@ export default {
           password: this.password,
           nickname: this.nickname,
         };
-
-        try {
-          this.registerUser(user).then(this.$router.push('/'));
-        } catch (error) {
-          setTimeout(() => {
-            this.clearError();
-          }, 4000);
-        }
+        this.registerUser(user).then(this.$router.push('/'));
       }
     },
   },

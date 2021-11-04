@@ -19,13 +19,13 @@
                         name="title"
                         label="Заголовок анека (если нужен)"
                         type="text"
-                        v-model="title"
+                        v-model.trim="title"
                         :rules="titleRules"></v-text-field>
           <v-textarea prepend-icon="mdi-lock"
                       name="body"
                       label="Анекдот"
                       type="text"
-                      v-model="body"
+                      v-model.trim="body"
                       counter="true"
                       auto-grow
                       rows="3"

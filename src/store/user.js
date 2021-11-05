@@ -5,13 +5,7 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-
-class User {
-  constructor(id, nickname) {
-    this.id = id;
-    this.nickname = nickname;
-  }
-}
+import User from '@/classes/UserClass';
 
 export default {
   state: {

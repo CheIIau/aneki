@@ -61,11 +61,9 @@ export default {
       return this.isUserLoggedIn ? 'deep-orange' : 'deep-orange lighten-4';
     },
   },
-  created() {
-    this.loadBookmarkedAneks();
-  },
+
   methods: {
-    ...mapActions(['changeVote', 'changeAnekBookmark', 'loadBookmarkedAneks']),
+    ...mapActions(['changeVote', 'changeAnekBookmark']),
     formatDate,
     onChangeVote(id, vote) {
       if (this.isUserLoggedIn) {

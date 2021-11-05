@@ -2,17 +2,7 @@
 import { getDatabase, ref, set, push, onValue, update, child, get } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Vue from 'vue';
-class Anek {
-  constructor(title, body, author, time, id = null, rating = 0, ratedUsers = {}) {
-    this.title = title;
-    this.body = body;
-    this.author = author;
-    this.time = time;
-    this.id = id;
-    this.rating = rating;
-    this.ratedUsers = ratedUsers;
-  }
-}
+import Anek from '@/classes/AnekClass';
 
 export default {
   state: {
@@ -23,13 +13,9 @@ export default {
     getAneks(state) {
       return state.aneks;
     },
-    // aneksMap(state) {
-    //   const map = {};
-    //   state.aneks.forEach((an, i) => {
-    //     map[an.id.toString()] = i;
-    //   });
-    //   return map;
-    // },
+    getBookmarkedAneks(state) {
+      return state.bookmarkedAneks;
+    },
   },
   mutations: {
     addAnek(state, { title, body, author, time }) {
@@ -41,47 +27,51 @@ export default {
     updateRating(state, { id, newRating }) {
       state.aneks.find((anek) => anek.id === id).rating = newRating;
     },
-    loadBookmarkedAneks(state, payload) {
-      state.bookmarkedAneks = payload;
+    loadBookmarkedAneks(state, id) {
+      if (!state.bookmarkedAneks.includes(id)) {
+        state.bookmarkedAneks.push(id);
+      } else {
+        state.bookmarkedAneks = state.bookmarkedAneks.filter((anekId) => anekId != id);
+      }
     },
   },
   actions: {
-    async loadBookmarkedAneks({ commit }) {
+    async loadBookmarkedAneks({ commit, getters }) {
+      commit('setLoading', true);
       const auth = getAuth();
-      let aneksRef = null;
       let userId = null;
       const resultAneks = [];
       try {
-        Promise.resolve()
-          .then(() => {
-            onAuthStateChanged(auth, (user) => {
-              userId = user.uid;
-            });
-          })
-          .then(() => {
-            const db = getDatabase();
-            aneksRef = ref(db, 'bookmarkAneks/' + userId);
-          })
-          .then(() => {
-            get(aneksRef)
-              .then((snapshot) => {
-                const bookmarkedAneks = snapshot.val();
-                Object.keys(bookmarkedAneks).forEach((key) => {
-                  const anek = bookmarkedAneks[key];
-                  resultAneks.push(anek);
-                });
-              })
-              .then(() => {
-                console.log(resultAneks);
-                return resultAneks;
+        await new Promise((resolve) => {
+          onAuthStateChanged(auth, (user) => {
+            userId = user.uid;
+            resolve();
+          });
+        });
+        const db = getDatabase();
+        const aneksRef = ref(db, 'bookmarkAneks/' + userId);
+        get(aneksRef)
+          .then((snapshot) => {
+            const bookmarkedAneks = snapshot.val();
+            if (bookmarkedAneks) {
+              Object.keys(bookmarkedAneks).forEach((key) => {
+                const anek = bookmarkedAneks[key];
+                if (!getters.getBookmarkedAneks.includes(anek)) {
+                  commit('loadBookmarkedAneks', anek);
+                }
               });
+            } 
+          })
+          .then(() => {
+            commit('setLoading', false);
           });
       } catch (error) {
         commit('setError', error.message);
+        commit('setLoading', false);
         throw error;
       }
     },
-    async changeAnekBookmark({ commit }, id) {
+    async changeAnekBookmark({ commit, getters }, id) {
       commit('setLocalLoading', true);
       let anekRef = null;
       let userId = null;
@@ -98,8 +88,15 @@ export default {
             anekRef = ref(db, 'bookmarkAneks/' + userId);
           })
           .then(() => {
-            update(anekRef, { [id]: id });
-            commit('setLocalLoading', false);
+            if (!getters.getBookmarkedAneks.includes(id)) {
+              update(anekRef, { [id]: id });
+              commit('loadBookmarkedAneks', id);
+              commit('setLocalLoading', false);
+            } else {
+              update(anekRef, { [id]: null });
+              commit('loadBookmarkedAneks', id);
+              commit('setLocalLoading', false);
+            }
           });
       } catch (error) {
         commit('setError', error.message);
@@ -131,7 +128,7 @@ export default {
         commit('setLoading', false);
       }
     },
-    async fetchAneks({ commit }) {
+    async fetchAneks({ commit, getters }) {
       commit('setLoading', true);
       const resultAneks = [];
       try {
@@ -145,7 +142,9 @@ export default {
               const anek = aneks[key];
               const newAnek = new Anek(anek.title, anek.body, anek.author, anek.time, key, anek.rating);
               Vue.set(resultAneks, i, newAnek);
-              // resultAneks.push(newAnek);
+              // if (!getters.getAneks.includes(newAnek)) {
+              //   resultAneks.push(newAnek);
+              // }
               ++i;
             });
             //Костыль, но при использовании метода push, при обновлении данных, элементы пушатся еще раз в конец массива
@@ -204,15 +203,3 @@ export default {
     },
   },
 };
-
-// function getAneks() {
-//   return [
-//     {
-//       title: 'GoodAnek',
-//       body: 'Надел мужик шляпу, а она ему как раз',
-//       author: 'Жизнь',
-//       authorId: '1488',
-//       time: '1635241835794',
-//     },
-//   ];
-// }

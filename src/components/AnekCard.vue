@@ -1,38 +1,36 @@
 <template>
   <div>
-    <v-card class="max-auto mb-7"
-            v-for="(anek,i) in aneks"
-            :key="i">
+    <v-card class="max-auto mb-7">
       <v-card-text>
         <p class="text-h4 text--primary">
-          {{anek.title}}
+          {{title}}
         </p>
         <div class="text--primary">
-          {{anek.body}}
+          {{body}}
         </div>
         <v-row class="mr-1 mb-1 mt-2"
                app>
-          <v-card-subtitle>Автор: {{anek.author}} </v-card-subtitle>
+          <v-card-subtitle>Автор: {{author}} </v-card-subtitle>
           <v-spacer></v-spacer>
-          <v-card-subtitle class="d-none d-sm-flex"> Выложено: {{formatDate(anek.time)}} </v-card-subtitle>
+          <v-card-subtitle class="d-none d-sm-flex"> Выложено: {{formatDate(time)}} </v-card-subtitle>
         </v-row>
         <v-card-actions>
           <v-btn icon
                  :loading="localLoading"
-                 color="grey"
-                 @click="changeBookmarkStatus(anek.id)">
+                 :color="bookmarkColor"
+                 @click="changeBookmarkStatus(id)">
             <v-icon>mdi-bookmark</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn icon
                  :color="arrowUpColor"
-                 @click="onChangeVote(anek.id, 'up')">
+                 @click="onChangeVote(id, 'up')">
             <v-icon>mdi-arrow-up-bold</v-icon>
           </v-btn>
-          <span> {{anek.rating}}</span>
+          <span> {{rating}}</span>
           <v-btn icon
                  :color="arrowDownColor"
-                 @click="onChangeVote(anek.id, 'down')">
+                 @click="onChangeVote(id, 'down')">
             <v-icon>mdi-arrow-down-bold</v-icon>
           </v-btn>
         </v-card-actions>
@@ -47,21 +45,53 @@ import { formatDate } from '@/functions/index.js';
 
 export default {
   props: {
-    aneks: {
-      type: Array,
+    title: {
+      type: String,
+      required: true,
+    },
+    body: {
+      type: String,
+      required: true,
+    },
+    author: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: Number,
+      required: true,
+    },
+    id: {
+      type: String,
+      required: true,
+    },
+    rating: {
+      type: Number,
       required: true,
     },
   },
+  data() {
+    return {
+      color: {
+        1: 'green',
+      },
+    };
+  },
   computed: {
-    ...mapGetters(['isUserLoggedIn', 'loading', 'localLoading']),
+    ...mapGetters(['isUserLoggedIn', 'loading', 'localLoading', 'getBookmarkedAneks']),
     arrowUpColor() {
       return this.isUserLoggedIn ? 'green' : 'green lighten-4';
     },
     arrowDownColor() {
       return this.isUserLoggedIn ? 'deep-orange' : 'deep-orange lighten-4';
     },
+    bookmarkColor() {
+      if (this.getBookmarkedAneks.includes(this.id)) {
+        return 'green';
+      }
+      return 'grey';
+    },
   },
-
   methods: {
     ...mapActions(['changeVote', 'changeAnekBookmark']),
     formatDate,

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { getDatabase, ref, set, push, onValue, update, child, get } from 'firebase/database';
+import { getDatabase, ref, set, push, onValue, update, child, get, query, orderByChild } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Vue from 'vue';
 import Anek from '@/classes/AnekClass';
@@ -60,7 +60,7 @@ export default {
                   commit('loadBookmarkedAneks', anek);
                 }
               });
-            } 
+            }
           })
           .then(() => {
             commit('setLoading', false);
@@ -77,7 +77,7 @@ export default {
       let userId = null;
       const auth = getAuth();
       try {
-        Promise.resolve()
+        await Promise.resolve()
           .then(() => {
             onAuthStateChanged(auth, (user) => {
               userId = user.uid;
@@ -128,36 +128,50 @@ export default {
         commit('setLoading', false);
       }
     },
-    async fetchAneks({ commit, getters }) {
+
+    async fetchAneks({ commit }, { reverse, sorted = null }) {
       commit('setLoading', true);
       const resultAneks = [];
       try {
         const db = getDatabase();
-        const aneksRef = ref(db, 'aneks');
-        await Promise.resolve().then(() => {
+        let aneksRef = ref(db, 'aneks');
+        if (sorted) {
+          aneksRef = query(aneksRef, orderByChild(`${sorted}`));
+        }
+        await new Promise((resolve) => {
           onValue(aneksRef, (snapshot) => {
-            const aneks = snapshot.val();
-            let i = 0;
-            Object.keys(aneks).forEach((key) => {
-              const anek = aneks[key];
-              const newAnek = new Anek(anek.title, anek.body, anek.author, anek.time, key, anek.rating);
-              Vue.set(resultAneks, i, newAnek);
-              // if (!getters.getAneks.includes(newAnek)) {
-              //   resultAneks.push(newAnek);
-              // }
-              ++i;
+            snapshot.forEach((child) => {
+              const anek = child.val();
+              const newAnek = new Anek(anek.title, anek.body, anek.author, anek.time, child.key, anek.rating);
+              resultAneks.push(newAnek);
             });
-            //Костыль, но при использовании метода push, при обновлении данных, элементы пушатся еще раз в конец массива
+            resolve();
           });
-        });
-        // commit('setLoading', false);
-        commit('loadAneks', resultAneks);
+        })
+          .then(() => {
+            if (reverse) {
+              resultAneks.reverse();
+            }
+          })
+          .then(() => {
+            commit('loadAneks', resultAneks);
+          });
       } catch (error) {
         commit('setError', error.message);
         commit('setLoading', false);
         throw error;
       }
     },
+
+    fetchAneksFromDB({ dispatch, commit }) {
+      dispatch('fetchAneks', { reverse: false });
+    },
+
+    fetchFavouriteAneksFromDB({ dispatch, commit }) {
+      const sorted = 'rating';
+      dispatch('fetchAneks', { reverse: true, sorted });
+    },
+
     async changeVote({ commit }, { id, vote }) {
       let rate = 0;
       vote == 'up' ? rate++ : rate--;

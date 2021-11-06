@@ -8,7 +8,14 @@
               offset-sm2
               md6
               offset-md3>
-        <anek-card :aneks="aneks"></anek-card>
+        <anek-card v-for="anek in aneks"
+                   :key="anek.id"
+                   :title="anek.title"
+                   :body="anek.body"
+                   :time="anek.time"
+                   :author="anek.author"
+                   :id="anek.id"
+                   :rating="anek.rating"></anek-card>
       </v-flex>
       <v-container fluid
                    v-else-if="!loading && aneksId.length==0">
@@ -69,9 +76,6 @@ export default {
   },
   computed: {
     ...mapGetters({ aneksId: 'getBookmarkedAneks', loading: 'loading' }),
-    isAneksInBookmark() {
-      return 123;
-    },
   },
   components: {
     AnekCard,

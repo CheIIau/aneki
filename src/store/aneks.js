@@ -1,13 +1,31 @@
 /* eslint-disable no-unused-vars */
-import { getDatabase, ref, set, push, onValue, update, child, get, query, orderByChild } from 'firebase/database';
+import {
+  getDatabase,
+  ref,
+  set,
+  push,
+  onValue,
+  update,
+  child,
+  get,
+  query,
+  orderByChild,
+  limitToFirst,
+  limitToLast,
+  startAt,
+  endAt,
+  startAfter,
+  orderByKey,
+  endBefore,
+} from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import Vue from 'vue';
 import Anek from '@/classes/AnekClass';
 
 export default {
   state: {
     aneks: [],
     bookmarkedAneks: [],
+    aneksCount: null,
   },
   getters: {
     getAneks(state) {
@@ -16,6 +34,9 @@ export default {
     getBookmarkedAneks(state) {
       return state.bookmarkedAneks;
     },
+    getAneksCount(state) {
+      return state.aneksCount;
+    },
   },
   mutations: {
     addAnek(state, { title, body, author, time }) {
@@ -23,6 +44,9 @@ export default {
     },
     loadAneks(state, payload) {
       state.aneks = payload;
+    },
+    loadAneksCount(state, payload) {
+      state.aneksCount = payload;
     },
     updateRating(state, { id, newRating }) {
       state.aneks.find((anek) => anek.id === id).rating = newRating;
@@ -104,16 +128,21 @@ export default {
         throw error;
       }
     },
-    async addAnek({ commit, rootGetters }, { title, body }) {
+
+    async addAnek({ commit, dispatch, getters }, { title, body }) {
       commit('clearError');
       commit('setLoading', true);
 
-      const userName = rootGetters['getUserName'] ?? 'Аноним';
+      let userName = 'Аноним';
       const db = getDatabase();
       const anekListRef = ref(db, 'aneks');
+      const aneksCountRef = ref(db, `aneksCount`);
       let userId = null;
       const auth = getAuth();
+      await dispatch('fetchAneksCount');
+      let aneksCount = getters.getAneksCount;
       onAuthStateChanged(auth, (user) => {
+        userName = user.displayName;
         userId = user.uid;
       });
 
@@ -121,6 +150,8 @@ export default {
         const newAnekRef = await push(anekListRef);
         const newAnek = new Anek(title, body, userName, Date.now(), userId, 0, { key: 'value' });
         await set(newAnekRef, newAnek);
+        aneksCount++;
+        await update(aneksCountRef, { aneksCount });
         commit('addAnek', { title, body, author: userName, time: Date.now(), userId });
         commit('setLoading', false);
       } catch (error) {
@@ -129,15 +160,27 @@ export default {
       }
     },
 
-    async fetchAneks({ commit }, { reverse, sorted = null }) {
+    async fetchAneks({ commit }, { reverse, sorted = null, pageNum, lastAnekId }) {
       commit('setLoading', true);
+      console.log(lastAnekId);
+      // const startFromAnekNum = pageNum * 3 - 2;
+      // const endAtAnekNum = pageNum * 3;
       const resultAneks = [];
       try {
         const db = getDatabase();
         let aneksRef = ref(db, 'aneks');
-        if (sorted) {
-          aneksRef = query(aneksRef, orderByChild(`${sorted}`));
+        if (sorted == 'time') {
+          aneksRef = query(aneksRef, orderByChild(`${sorted}`), limitToLast(3));
+          console.log('old');
+        } else if (sorted) {
+          console.log('rating');
+          aneksRef = query(aneksRef, orderByChild(`${sorted}`), limitToLast(3));
+        } else {
+          console.log('new');
+          //startAfter('-Mnlo81j3yVVFg2NdISg') им и endbefore можно сделать сортировку по дате добавления
+          aneksRef = query(aneksRef, orderByKey(), endBefore('-Mnlo81j3yVVFg2NdISg'), limitToLast(3));
         }
+
         await new Promise((resolve) => {
           onValue(aneksRef, (snapshot) => {
             snapshot.forEach((child) => {
@@ -163,13 +206,31 @@ export default {
       }
     },
 
-    fetchAneksFromDB({ dispatch, commit }) {
-      dispatch('fetchAneks', { reverse: false });
+    fetchNewAneksFromDB({ dispatch }, { pageNum = 1, lastAnekId = null } = {}) {
+      dispatch('fetchAneks', { reverse: true, pageNum, lastAnekId }); //new
     },
 
-    fetchFavouriteAneksFromDB({ dispatch, commit }) {
+    fetchOldAneksFromDB({ dispatch }, pageNum) {
+      const sorted = 'time';
+      dispatch('fetchAneks', { reverse: false, sorted, pageNum }); //old
+    },
+
+    fetchFavouriteAneksFromDB({ dispatch }, pageNum) {
       const sorted = 'rating';
-      dispatch('fetchAneks', { reverse: true, sorted });
+      dispatch('fetchAneks', { reverse: true, sorted, pageNum }); //rating
+    },
+
+    async fetchAneksCount({ commit }) {
+      try {
+        const db = getDatabase();
+        const aneksCountRef = ref(db, `aneksCount`);
+        const aneksCount = child(aneksCountRef, `aneksCount`);
+        await get(aneksCount).then((snapshot) => {
+          commit('loadAneksCount', snapshot.val());
+        });
+      } catch (error) {
+        commit('setError', error.message);
+      }
     },
 
     async changeVote({ commit }, { id, vote }) {

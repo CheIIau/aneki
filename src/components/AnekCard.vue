@@ -70,13 +70,6 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      color: {
-        1: 'green',
-      },
-    };
-  },
   computed: {
     ...mapGetters(['isUserLoggedIn', 'loading', 'localLoading', 'getBookmarkedAneks']),
     arrowUpColor() {

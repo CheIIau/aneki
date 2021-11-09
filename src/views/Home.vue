@@ -11,11 +11,21 @@
         <v-menu offset-y
                 transition="slide-y-transition">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary"
+            <v-btn class="hidden-sm-and-down"
+                   color="primary"
                    dark
                    v-bind="attrs"
                    v-on="on">
               Сортировать
+            </v-btn>
+            <v-btn class="hidden-md-and-up mb-3"
+                   color="primary"
+                   dark
+                   v-bind="attrs"
+                   block
+                   v-on="on">
+              Сортировать &nbsp;
+              <v-icon>mdi-sort-ascending</v-icon>
             </v-btn>
           </template>
           <v-list>
@@ -58,42 +68,81 @@
         </v-flex>
       </v-container>
     </div>
+    <template>
+      <div class="text-center">
+        <v-container>
+          <v-row justify="center">
+            <v-col cols="8">
+              <v-container class="max-width">
+                <v-pagination v-model="page"
+                              class="my-4"
+                              :length="totalPages"
+                              :total-visible="7"></v-pagination>
+              </v-container>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
+    </template>
   </v-app>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import AnekCard from '@/components/AnekCard.vue';
 
 export default {
   data: () => ({
+    page: 1,
     items: [
-      { title: 'Сначала новые', sort: 'new' },
       { title: 'По рейтингу', sort: 'rating' },
+      { title: 'Сначала новые', sort: 'new' },
+      { title: 'Сначала старые', sort: 'old' },
     ],
   }),
   components: { AnekCard },
   computed: {
-    ...mapGetters({ aneks: 'getAneks', loading: 'loading', isUserLoggedIn: 'isUserLoggedIn' }),
+    ...mapGetters({
+      aneks: 'getAneks',
+      loading: 'loading',
+      isUserLoggedIn: 'isUserLoggedIn',
+      aneksCount: 'getAneksCount',
+    }),
+    totalPages() {
+      return Math.ceil(this.aneksCount / 3);
+    },
   },
   methods: {
+    ...mapActions({
+      newAneks: 'fetchNewAneksFromDB',
+      oldAneks: 'fetchOldAneksFromDB',
+      ratedAneks: 'fetchFavouriteAneksFromDB',
+      fetchAneksCount: 'fetchAneksCount',
+    }),
     sortAneks(sort) {
       if (sort === 'new') {
-        this.$store.dispatch('fetchAneksFromDB');
+        const lastAnekId = this.aneks[this.aneks.length - 1].id;
+        this.newAneks({ pageNum: this.page, lastAnekId });
       } else if (sort === 'rating') {
-        this.$store.dispatch('fetchFavouriteAneksFromDB');
+        this.ratedAneks(this.page);
+      } else if (sort === 'old') {
+        this.oldAneks(this.page);
       }
     },
   },
   created() {
-    this.$store.dispatch('fetchAneksFromDB');
-    // this.$store.dispatch('fetchFavouriteAneksFromDB');
+    // прописать в анеках в функции fetch если propPage != null передаем id в fetchAnek из fetchanekDb и сортируем. в fetchAnek прописать по умолчанию propPage = null
+    this.newAneks();
+    this.fetchAneksCount();
   },
   watch: {
     aneks() {
       if (this.aneks.length != 0) {
         this.$store.commit('setLoading', false);
       }
+    },
+    page() {
+      console.log(123);
     },
   },
 };

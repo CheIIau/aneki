@@ -85,6 +85,9 @@ export default {
       return 'grey';
     },
   },
+  created() {
+    console.log(this.rating);
+  },
   methods: {
     ...mapActions(['changeVote', 'changeAnekBookmark']),
     formatDate,

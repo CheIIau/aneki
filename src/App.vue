@@ -4,7 +4,7 @@
             tile
             width="300">
       <v-navigation-drawer app
-                           v-model="drawer"
+                           v-model="showDrawer"
                            dark
                            src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
                            temporary>
@@ -46,7 +46,7 @@
                color="primary"
                dark>
       <v-app-bar-nav-icon class="hidden-md-and-up"
-                          @click="drawer =!drawer"></v-app-bar-nav-icon>
+                          @click.stop="showDrawer = !showDrawer"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
         <router-link to="/"
                      class="pointer">
@@ -133,7 +133,7 @@ export default {
   name: 'App',
   data: () => ({
     snackbar: true,
-    drawer: false,
+    showDrawer: false,
   }),
   computed: {
     ...mapGetters(['loading', 'loadingUser', 'error', 'isUserLoggedIn']),
@@ -141,12 +141,14 @@ export default {
       if (this.isUserLoggedIn) {
         return [
           { title: 'Все анеки', icon: 'mdi-format-list-bulleted', url: '/' },
+          { title: 'Топ 100', icon: 'mdi-star', url: '/best' },
           { title: 'Закладки', icon: 'mdi-bookmark', url: '/favs' },
           { title: 'Добавить анек', icon: 'mdi-file-plus', url: '/new' },
         ];
       }
       return [
         { title: 'Все анеки', icon: 'mdi-format-list-bulleted', url: '/' },
+        { title: 'Топ 100', icon: 'mdi-star', url: '/best' },
         { title: 'Регистрация', icon: 'mdi-account-plus', url: '/registration' },
       ];
     },

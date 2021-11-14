@@ -5,7 +5,7 @@ function formatDate(timestamp) {
   const month = months[a.getMonth()];
   const date = a.getDate();
   const hour = a.getHours();
-  const min = a.getMinutes();
+  const min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
   const time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
   return time;
 }

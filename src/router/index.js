@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '@/views/Home.vue';
 import Favorites from '@/views/Favorites.vue';
+import Best from '@/views/Best.vue';
 import New from '@/views/New.vue';
 import Registration from '@/views/Registration.vue';
 import Login from '@/views/Login.vue';
@@ -21,6 +22,11 @@ const routes = [
     name: 'Favorites',
     component: Favorites,
     beforeEnter: AuthGuard,
+  },
+  {
+    path: '/best',
+    name: 'Best',
+    component: Best,
   },
   {
     path: '/new',

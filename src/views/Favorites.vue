@@ -1,55 +1,52 @@
 <template>
   <v-app>
     <template>
-      <v-flex v-if="!loading && aneksId.length!==0"
-              xs10
-              offset-xs1
-              sm8
-              offset-sm2
-              md6
-              offset-md3>
-        <anek-card v-for="anek in aneks"
-                   :key="anek.id"
-                   :title="anek.title"
-                   :body="anek.body"
-                   :time="anek.time"
-                   :author="anek.author"
-                   :id="anek.id"
-                   :rating="anek.rating"></anek-card>
+      <v-flex
+        md6
+        offset-md3
+        offset-sm2
+        offset-xs1
+        sm8
+        v-if="!loading && aneksId.length !== 0"
+        xs10
+      >
+        <anek-card
+          :author="anek.author"
+          :body="anek.body"
+          :id="anek.id"
+          :key="anek.id"
+          :rating="anek.rating"
+          :time="anek.time"
+          :title="anek.title"
+          v-for="anek in aneks"
+        ></anek-card>
       </v-flex>
-      <v-container fluid
-                   v-else-if="!loading && aneksId.length==0">
+      <v-container
+        fluid
+        v-else-if="!loading && aneksId.length == 0"
+      >
         <v-layout justify-center>
-          <v-flex xs12
-                  sm8
-                  md6
-                  text-center
-                  fill-height>
+          <v-flex
+            fill-height
+            md6
+            sm8
+            text-center
+            xs12
+          >
             <p class="text-h4 primary--text">У вас нет анеков в закладках</p>
           </v-flex>
         </v-layout>
       </v-container>
-      <div v-else>
-        <v-container grid-list-xs>
-          <v-flex d-flex
-                  justify-center
-                  xs-12
-                  class="pt-9 mt-9">
-            <v-progress-circular :size="100"
-                                 :width="4"
-                                 color="primary"
-                                 indeterminate></v-progress-circular>
-          </v-flex>
-        </v-container>
-      </div>
+      <spinner v-else></spinner>
     </template>
   </v-app>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import AnekCard from '@/components/AnekCard.vue';
 import { getDatabase, ref, get } from 'firebase/database';
+import AnekCard from '@/components/AnekCard.vue';
+import Spinner from '@/components/Spinner.vue';
 import Anek from '@/classes/AnekClass';
 
 export default {
@@ -79,6 +76,7 @@ export default {
   },
   components: {
     AnekCard,
+    Spinner,
   },
   created() {
     this.loadBookmarkedAneks();

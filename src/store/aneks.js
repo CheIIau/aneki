@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import Vue from 'vue';
 import {
   getDatabase,
   ref,
@@ -148,7 +149,7 @@ export default {
 
       try {
         const newAnekRef = await push(anekListRef);
-        const newAnek = new Anek(title, body, userName, Date.now(), userId, 0, { key: 'value' });
+        const newAnek = new Anek(title, body, userName, Date.now(), userId, 0, 1 - Date.now());
         await set(newAnekRef, newAnek);
         aneksCount++;
         await update(aneksCountRef, { aneksCount });
@@ -160,45 +161,40 @@ export default {
       }
     },
 
-    async fetchAneks({ commit }, { reverse, sorted = null, pageNum, lastAnekId }) {
+    async fetchAneks({ commit }, { reverse = false, sorted = null, lastAnekId }) {
       commit('setLoading', true);
       console.log(lastAnekId);
-      // const startFromAnekNum = pageNum * 3 - 2;
-      // const endAtAnekNum = pageNum * 3;
       const resultAneks = [];
       try {
         const db = getDatabase();
         let aneksRef = ref(db, 'aneks');
-        if (sorted == 'time') {
-          aneksRef = query(aneksRef, orderByChild(`${sorted}`), limitToLast(3));
-          console.log('old');
-        } else if (sorted) {
-          console.log('rating');
-          aneksRef = query(aneksRef, orderByChild(`${sorted}`), limitToLast(3));
+        if (sorted) {
+          console.log(sorted);
+          aneksRef = query(aneksRef, orderByChild(`${sorted}`), limitToLast(100));
         } else {
           console.log('new');
           //startAfter('-Mnlo81j3yVVFg2NdISg') им и endbefore можно сделать сортировку по дате добавления
-          aneksRef = query(aneksRef, orderByKey(), endBefore('-Mnlo81j3yVVFg2NdISg'), limitToLast(3));
+          aneksRef = query(aneksRef, orderByKey(), limitToLast(100));
         }
 
         await new Promise((resolve) => {
           onValue(aneksRef, (snapshot) => {
+            let i = 0;
             snapshot.forEach((child) => {
               const anek = child.val();
               const newAnek = new Anek(anek.title, anek.body, anek.author, anek.time, child.key, anek.rating);
-              resultAneks.push(newAnek);
+              console.log(anek.rating);
+              Vue.set(resultAneks, i, newAnek);
+              ++i;
+              // resultAneks.push(newAnek);
             });
             resolve();
           });
-        })
-          .then(() => {
-            if (reverse) {
-              resultAneks.reverse();
-            }
-          })
-          .then(() => {
-            commit('loadAneks', resultAneks);
-          });
+        });
+        if (reverse) {
+          resultAneks.reverse();
+        }
+        commit('loadAneks', resultAneks);
       } catch (error) {
         commit('setError', error.message);
         commit('setLoading', false);
@@ -206,18 +202,18 @@ export default {
       }
     },
 
-    fetchNewAneksFromDB({ dispatch }, { pageNum = 1, lastAnekId = null } = {}) {
-      dispatch('fetchAneks', { reverse: true, pageNum, lastAnekId }); //new
+    fetchOldAneksFromDB({ dispatch }, { lastAnekId = null } = {}) {
+      dispatch('fetchAneks', { lastAnekId }); //new
     },
 
-    fetchOldAneksFromDB({ dispatch }, pageNum) {
-      const sorted = 'time';
-      dispatch('fetchAneks', { reverse: false, sorted, pageNum }); //old
+    fetchNewAneksFromDB({ dispatch }, { lastAnekId = null } = {}) {
+      const sorted = 'reverseTime';
+      dispatch('fetchAneks', { sorted, lastAnekId }); //old
     },
 
-    fetchFavouriteAneksFromDB({ dispatch }, pageNum) {
+    fetchFavouriteAneksFromDB({ dispatch }) {
       const sorted = 'rating';
-      dispatch('fetchAneks', { reverse: true, sorted, pageNum }); //rating
+      dispatch('fetchAneks', { reverse: true, sorted }); //rating
     },
 
     async fetchAneksCount({ commit }) {

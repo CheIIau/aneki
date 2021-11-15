@@ -101,6 +101,7 @@ export default {
     },
   },
   async created() {
+    this.clearAneks();
     // this.$store.commit('setLoading', true);
     await this.newAneks();
     const optionsObserver = {

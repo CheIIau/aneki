@@ -35,7 +35,6 @@ export default {
     ...mapGetters({
       aneks: 'getAneks',
       loading: 'loading',
-      isUserLoggedIn: 'isUserLoggedIn',
     }),
   },
   methods: {
@@ -45,13 +44,6 @@ export default {
   },
   created() {
     this.favouriteAneks();
-  },
-  watch: {
-    aneks() {
-      if (this.aneks.length != 0) {
-        this.$store.commit('setLoading', false);
-      }
-    },
   },
 };
 </script>

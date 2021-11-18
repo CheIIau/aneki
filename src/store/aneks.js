@@ -164,9 +164,8 @@ export default {
     },
 
     async fetchAneks({ commit }, { reverse = false, sorted = null, lastAnekVal = null }) {
-      !lastAnekVal ? commit('setLoading', true) : '';
-      let limit = 5;
-      sorted == 'rating' ? (limit = 100) : '';
+      if (!lastAnekVal) commit('setLoading', true);
+      const limit = sorted == 'rating' ? 100 : 5;
       const resultAneks = [];
       try {
         const db = getDatabase();
@@ -190,13 +189,14 @@ export default {
                 anek.rating,
                 anek.reverseTime,
               );
+              console.log(newAnek.body);
               Vue.set(resultAneks, i, newAnek);
               ++i;
             });
             resolve();
           });
         });
-        reverse ? resultAneks.reverse() : '';
+        if (reverse) resultAneks.reverse();
         commit('loadAneks', resultAneks);
         commit('setLoading', false);
       } catch (error) {

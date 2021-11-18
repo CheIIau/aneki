@@ -5,7 +5,7 @@
         <p class="text-h4 text--primary">
           {{title}}
         </p>
-        <div class="text--primary">
+        <div class="text--primary anek-body">
           {{body}}
         </div>
         <v-row class="mr-1 mb-1 mt-2"
@@ -99,3 +99,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.anek-body {
+  white-space: pre-line;
+  word-wrap: break-word;
+  font-family: inherit;
+}
+</style>

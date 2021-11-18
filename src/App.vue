@@ -155,11 +155,10 @@ export default {
   },
   watch: {
     error() {
-      this.error != false
-        ? setTimeout(() => {
-            this.clearError();
-          }, 4000)
-        : 'false';
+      if (this.error != false)
+        setTimeout(() => {
+          this.clearError();
+        }, 4000);
     },
   },
   created() {

@@ -13,6 +13,7 @@ import {
   orderByChild,
   limitToFirst,
   startAfter,
+  equalTo,
 } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Anek from '@/classes/AnekClass';
@@ -22,10 +23,14 @@ export default {
     aneks: [],
     bookmarkedAneks: [],
     aneksCount: null,
+    searchedAneks: [],
   },
   getters: {
     getAneks(state) {
       return state.aneks;
+    },
+    getSearchedAneks(state) {
+      return state.searchedAneks;
     },
     getBookmarkedAneks(state) {
       return state.bookmarkedAneks;
@@ -45,8 +50,14 @@ export default {
         state.aneks = payload;
       }
     },
+    loadSearchedAneks(state, payload) {
+      state.searchedAneks = payload;
+    },
     clearAneks(state) {
       state.aneks = [];
+    },
+    clearSearchedAneks(state) {
+      state.searchedAneks = [];
     },
     loadAneksCount(state, payload) {
       state.aneksCount = payload;
@@ -67,7 +78,6 @@ export default {
       commit('setLoading', true);
       const auth = getAuth();
       let userId = null;
-      const resultAneks = [];
       try {
         await new Promise((resolve) => {
           onAuthStateChanged(auth, (user) => {
@@ -77,21 +87,18 @@ export default {
         });
         const db = getDatabase();
         const aneksRef = ref(db, 'bookmarkAneks/' + userId);
-        get(aneksRef)
-          .then((snapshot) => {
-            const bookmarkedAneks = snapshot.val();
-            if (bookmarkedAneks) {
-              Object.keys(bookmarkedAneks).forEach((key) => {
-                const anek = bookmarkedAneks[key];
-                if (!getters.getBookmarkedAneks.includes(anek)) {
-                  commit('loadBookmarkedAneks', anek);
-                }
-              });
-            }
-          })
-          .then(() => {
-            commit('setLoading', false);
-          });
+        get(aneksRef).then((snapshot) => {
+          const bookmarkedAneks = snapshot.val();
+          if (bookmarkedAneks) {
+            Object.keys(bookmarkedAneks).forEach((key) => {
+              const anek = bookmarkedAneks[key];
+              if (!getters.getBookmarkedAneks.includes(anek)) {
+                commit('loadBookmarkedAneks', anek);
+              }
+            });
+          }
+        });
+        commit('setLoading', false);
       } catch (error) {
         commit('setError', error.message);
         commit('setLoading', false);
@@ -104,27 +111,23 @@ export default {
       let userId = null;
       const auth = getAuth();
       try {
-        await Promise.resolve()
-          .then(() => {
-            onAuthStateChanged(auth, (user) => {
-              userId = user.uid;
-            });
-          })
-          .then(() => {
-            const db = getDatabase();
-            anekRef = ref(db, 'bookmarkAneks/' + userId);
-          })
-          .then(() => {
-            if (!getters.getBookmarkedAneks.includes(id)) {
-              update(anekRef, { [id]: id });
-              commit('loadBookmarkedAneks', id);
-              commit('setLocalLoading', false);
-            } else {
-              update(anekRef, { [id]: null });
-              commit('loadBookmarkedAneks', id);
-              commit('setLocalLoading', false);
-            }
+        await new Promise((resolve) => {
+          onAuthStateChanged(auth, (user) => {
+            userId = user.uid;
           });
+          resolve();
+        });
+        const db = getDatabase();
+        anekRef = ref(db, 'bookmarkAneks/' + userId);
+        if (!getters.getBookmarkedAneks.includes(id)) {
+          await update(anekRef, { [id]: id });
+          commit('loadBookmarkedAneks', id);
+          commit('setLocalLoading', false);
+        } else {
+          await update(anekRef, { [id]: null });
+          commit('loadBookmarkedAneks', id);
+          commit('setLocalLoading', false);
+        }
       } catch (error) {
         commit('setError', error.message);
         commit('setLocalLoading', false);
@@ -136,11 +139,11 @@ export default {
       commit('clearError');
       commit('setLoading', true);
 
-      let userName = 'Аноним';
+      let userName = '';
+      let userId = null;
       const db = getDatabase();
       const anekListRef = ref(db, 'aneks');
       const aneksCountRef = ref(db, `aneksCount`);
-      let userId = null;
       const auth = getAuth();
       await dispatch('fetchAneksCount');
       let aneksCount = getters.getAneksCount;
@@ -163,7 +166,49 @@ export default {
       }
     },
 
+    async fetchSearchedAneks({ commit }, searchQuery) {
+      commit('setLoading', true);
+      commit('clearError');
+      commit('clearSearchedAneks');
+
+      const resultAneks = [];
+      searchQuery = searchQuery.toString();
+      try {
+        const db = getDatabase();
+        let aneksRef = ref(db, 'aneks');
+        console.log(searchQuery);
+        aneksRef = query(aneksRef, orderByChild('author'), equalTo(searchQuery));
+        await new Promise((resolve) => {
+          onValue(aneksRef, (snapshot) => {
+            let i = 0;
+            snapshot.forEach((child) => {
+              const anek = child.val();
+              const newAnek = new Anek(
+                anek.title,
+                anek.body,
+                anek.author,
+                anek.time,
+                child.key,
+                anek.rating,
+                anek.reverseTime,
+              );
+              console.log(newAnek.body);
+              Vue.set(resultAneks, i, newAnek);
+              ++i;
+            });
+            resolve();
+          });
+        });
+        commit('loadSearchedAneks', resultAneks);
+        commit('setLoading', false);
+      } catch (error) {
+        commit('setError', error.message);
+        commit('setLoading', false);
+      }
+    },
+
     async fetchAneks({ commit }, { reverse = false, sorted = null, lastAnekVal = null }) {
+      commit('clearError');
       if (!lastAnekVal) commit('setLoading', true);
       const limit = sorted == 'rating' ? 100 : 5;
       const resultAneks = [];
@@ -189,7 +234,6 @@ export default {
                 anek.rating,
                 anek.reverseTime,
               );
-              console.log(newAnek.body);
               Vue.set(resultAneks, i, newAnek);
               ++i;
             });
@@ -206,12 +250,12 @@ export default {
       }
     },
 
-    fetchOldAneksFromDB({ dispatch, commit }, { lastAnekVal = null } = {}) {
+    fetchOldAneksFromDB({ dispatch }, { lastAnekVal = null } = {}) {
       const sorted = 'time';
       dispatch('fetchAneks', { sorted, lastAnekVal });
     },
 
-    fetchNewAneksFromDB({ dispatch, commit }, { lastAnekVal = null } = {}) {
+    fetchNewAneksFromDB({ dispatch }, { lastAnekVal = null } = {}) {
       const sorted = 'reverseTime';
       dispatch('fetchAneks', { sorted, lastAnekVal });
     },
@@ -238,22 +282,24 @@ export default {
     async changeVote({ commit }, { id, vote }) {
       let rate = 0;
       vote == 'up' ? rate++ : rate--;
+
       try {
         const db = getDatabase();
         const anekRef = ref(db, 'aneks/');
         const anek = child(anekRef, `${id}`);
         let userId = null;
-        await get(anek).then(async function (snapshot) {
+        const auth = getAuth();
+        await new Promise((resolve) => {
+          onAuthStateChanged(auth, (user) => {
+            userId = user.uid;
+          });
+          resolve();
+        });
+        await get(anek).then(async (snapshot) => {
           if (snapshot.exists()) {
             const ratedUsers = child(anek, `/ratedUsers`);
             let alreadyVoted = false;
-            await Promise.resolve().then(() => {
-              const auth = getAuth();
-              onAuthStateChanged(auth, (user) => {
-                userId = user.uid;
-              });
-            });
-            get(ratedUsers).then((s) => {
+            await get(ratedUsers).then(async (s) => {
               const ratedUsersObj = s.val();
               Object.keys(ratedUsersObj).forEach((key) => {
                 if (ratedUsersObj[key] == userId) {
@@ -263,8 +309,8 @@ export default {
               });
               if (!alreadyVoted) {
                 const newRating = snapshot.val().rating + rate;
-                update(anek, { rating: newRating });
-                update(ratedUsers, { [userId]: userId });
+                await update(anek, { rating: newRating });
+                await update(ratedUsers, { [userId]: userId });
                 commit('updateRating', { id, newRating });
               }
             });

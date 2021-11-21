@@ -7,6 +7,7 @@ import New from '@/views/New.vue';
 import Registration from '@/views/Registration.vue';
 import Login from '@/views/Login.vue';
 import E404 from '@/views/E404.vue';
+import Search from '@/views/Search.vue';
 import AuthGuard from './auth-guard';
 
 Vue.use(VueRouter);
@@ -33,6 +34,11 @@ const routes = [
     name: 'New',
     component: New,
     beforeEnter: AuthGuard,
+  },
+  {
+    path: '/search',
+    name: 'Search',
+    component: Search,
   },
   {
     path: '/registration',

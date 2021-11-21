@@ -46,14 +46,14 @@
               sm8
               v-if="!loading"
               xs10>
-        <anek-card :author="anek.author"
+        <anek-card v-for="anek in aneks"
+                   :author="anek.author"
                    :body="anek.body"
                    :id="anek.id"
                    :key="anek.id"
                    :rating="anek.rating"
                    :time="anek.time"
-                   :title="anek.title"
-                   v-for="anek in aneks"></anek-card>
+                   :title="anek.title"></anek-card>
       </v-flex>
       <spinner v-else></spinner>
     </v-app>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-card class="max-auto mb-7">
-      <spinner v-if="localLoading"></spinner>
-      <v-img v-show="!localLoading"
+      <spinner v-if="loading"></spinner>
+      <v-img v-show="!loading"
              contain
              @load="isLoaded"
              @loadstart="startLoading"
@@ -40,7 +40,7 @@ import Spinner from '@/components/Spinner.vue';
 export default {
   data() {
     return {
-      qwe: true,
+      loading: false,
     };
   },
   props: {
@@ -60,13 +60,16 @@ export default {
       type: Number,
       required: true,
     },
+    id: {
+      type: String,
+      required: true,
+    },
   },
   components: {
-    // eslint-disable-next-line vue/no-unused-components
     Spinner,
   },
   computed: {
-    ...mapGetters(['isUserLoggedIn', 'localLoading']),
+    ...mapGetters(['isUserLoggedIn']),
     arrowUpColor() {
       return this.isUserLoggedIn ? 'green' : 'green lighten-4';
     },
@@ -75,14 +78,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['changeMemeVote', 'setLocalLoading']),
+    ...mapActions(['changeMemeVote']),
     isLoaded() {
-      console.log('end');
-      this.setLocalLoading(false);
+      this.loading = false;
     },
     startLoading() {
-      console.log('start');
-      this.setLocalLoading(true);
+      this.loading = true;
     },
     formatDate,
     onChangeVote(id, vote) {

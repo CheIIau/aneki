@@ -46,7 +46,7 @@ export default {
     loadAneks(state, payload) {
       //better use the word 'set'
       if (state.aneks.length !== 0) {
-        state.aneks = [...state.aneks, payload];
+        state.aneks = [...state.aneks, ...payload];
       } else {
         state.aneks = payload;
       }
@@ -159,7 +159,6 @@ export default {
         await set(newAnekRef, newAnek);
         aneksCount++;
         await update(aneksCountRef, { aneksCount });
-        commit('addAnek', { title, body, author: userName, time: Date.now(), userId });
         commit('setLoading', false);
       } catch (error) {
         commit('setError', error.message);
@@ -312,7 +311,6 @@ export default {
                 const newRating = snapshot.val().rating + rate;
                 await update(anek, { rating: newRating });
                 await update(ratedUsers, { [userId]: userId });
-                commit('updateRating', { id, newRating });
               }
             });
           } else {

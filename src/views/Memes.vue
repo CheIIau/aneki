@@ -61,7 +61,8 @@
                    :imageUrl="meme.imageUrl"
                    :key="meme.imageUrl"
                    :rating="meme.rating"
-                   :time="meme.time"></meme-card>
+                   :time="meme.time"
+                   :id="meme.id"></meme-card>
       </v-flex>
     </v-flex>
 

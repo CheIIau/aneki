@@ -4,8 +4,10 @@ import {
   ref,
   push,
   set,
+  get,
   update,
   query,
+  child,
   orderByChild,
   startAfter,
   limitToFirst,
@@ -89,6 +91,7 @@ export default {
                 meme.rating,
                 meme.ratedUsers,
               );
+              newMeme.id = child.key;
               Vue.set(resultMemes, i, newMeme);
               ++i;
             });
@@ -119,6 +122,44 @@ export default {
       const sorted = 'rating';
       commit('clearMemes');
       dispatch('fetchMemes', { reverse: true, sorted });
+    },
+
+    async changeMemeVote({ commit, getters }, { id, vote }) {
+      let rate = 0;
+      vote == 'up' ? rate++ : rate--;
+
+      try {
+        const db = getDatabase();
+        const memesRef = ref(db, 'memes/');
+        const meme = child(memesRef, `${id}`);
+        const userId = getters.user.id;
+        await get(meme).then(async (snapshot) => {
+          if (snapshot.exists()) {
+            const ratedUsers = child(meme, `/ratedUsers`);
+            let alreadyVoted = false;
+            await get(ratedUsers).then(async (s) => {
+              const ratedUsersObj = s.val();
+              Object.keys(ratedUsersObj).forEach((key) => {
+                if (ratedUsersObj[key] == userId) {
+                  commit('setError', 'Вы уже голосовали за этот анек');
+                  alreadyVoted = true;
+                }
+              });
+              if (!alreadyVoted) {
+                const newRating = snapshot.val().rating + rate;
+                await update(meme, { rating: newRating });
+                await update(ratedUsers, { [userId]: userId });
+              }
+            });
+          } else {
+            commit('setError', 'Данные недоступны');
+          }
+        });
+      } catch (error) {
+        commit('setError', error.message);
+        commit('setLoading', false);
+        throw error;
+      }
     },
   },
 };

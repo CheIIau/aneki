@@ -5,7 +5,7 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import User from '@/classes/UserClass';
+import { User } from '@/classes/index.js';
 
 export default {
   state: {
@@ -29,9 +29,6 @@ export default {
     },
     isUserLoggedIn(state) {
       return state.user !== null;
-    },
-    getUserName(state) {
-      return state.user?.nickname;
     },
   },
   actions: {

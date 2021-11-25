@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 export default {
   data() {
     return {
@@ -81,6 +81,9 @@ export default {
       ],
     };
   },
+  computed: {
+    ...mapGetters(['loading']),
+  },
   methods: {
     ...mapActions(['registerUser', 'clearError']),
     onSubmit() {
@@ -95,9 +98,4 @@ export default {
     },
   },
 };
-
-//  <v-btn color="primary"
-//                    @click="onSubmit"
-//                    :loading="loading"
-//                    :disabled="!valid || loading">Регистрация</v-btn>
 </script>

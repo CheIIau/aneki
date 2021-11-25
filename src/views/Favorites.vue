@@ -1,38 +1,30 @@
 <template>
   <v-app>
     <template>
-      <v-flex
-        md6
-        offset-md3
-        offset-sm2
-        offset-xs1
-        sm8
-        v-if="!loading && aneksId.length !== 0"
-        xs10
-      >
-        <anek-card
-          :author="anek.author"
-          :body="anek.body"
-          :id="anek.id"
-          :key="anek.id"
-          :rating="anek.rating"
-          :time="anek.time"
-          :title="anek.title"
-          v-for="anek in aneks"
-        ></anek-card>
+      <v-flex md6
+              offset-md3
+              offset-sm2
+              offset-xs1
+              sm8
+              v-if="!loading && aneksId.length !== 0"
+              xs10>
+        <anek-card :author="anek.author"
+                   :body="anek.body"
+                   :id="anek.id"
+                   :key="anek.id"
+                   :rating="anek.rating"
+                   :time="anek.time"
+                   :title="anek.title"
+                   v-for="anek in aneks"></anek-card>
       </v-flex>
-      <v-container
-        fluid
-        v-else-if="!loading && aneksId.length == 0"
-      >
+      <v-container fluid
+                   v-else-if="!loading && aneksId.length == 0">
         <v-layout justify-center>
-          <v-flex
-            fill-height
-            md6
-            sm8
-            text-center
-            xs12
-          >
+          <v-flex fill-height
+                  md6
+                  sm8
+                  text-center
+                  xs12>
             <p class="text-h4 primary--text">У вас нет анеков в закладках</p>
           </v-flex>
         </v-layout>
@@ -47,7 +39,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { getDatabase, ref, get } from 'firebase/database';
 import AnekCard from '@/components/AnekCard.vue';
 import Spinner from '@/components/Spinner.vue';
-import Anek from '@/classes/AnekClass';
+import { Anek } from '@/classes/index.js';
 
 export default {
   data() {
@@ -80,14 +72,14 @@ export default {
   },
   created() {
     this.loadBookmarkedAneks();
-    if (this.aneksId.length != 0) {
+    if (this.aneksId.length !== 0) {
       this.renderAneks();
       this.setLoading(false);
     }
   },
   watch: {
     aneksId() {
-      if (this.aneksId || this.aneksId.length != 0) {
+      if (this.aneksId || this.aneksId.length !== 0) {
         this.aneks = [];
         this.renderAneks();
         this.setLoading(false);

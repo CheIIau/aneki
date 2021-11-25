@@ -9,6 +9,7 @@ import Login from '@/views/Login.vue';
 import E404 from '@/views/E404.vue';
 import Search from '@/views/Search.vue';
 import AuthGuard from './auth-guard';
+import Memes from '@/views/Memes';
 
 Vue.use(VueRouter);
 
@@ -28,6 +29,11 @@ const routes = [
     path: '/best',
     name: 'Best',
     component: Best,
+  },
+  {
+    path: '/memes',
+    name: 'Memes',
+    component: Memes,
   },
   {
     path: '/new',

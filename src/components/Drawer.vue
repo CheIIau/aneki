@@ -1,8 +1,8 @@
 <template>
-  <v-app class="mx-auto"
-         tile
-         width="300">
-    <v-navigation-drawer value="showDrawer"
+  <v-card class="mx-auto"
+          tile
+          width="300">
+    <v-navigation-drawer v-model="drawer"
                          app
                          dark
                          src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
@@ -24,7 +24,7 @@
       <template v-slot:append>
         <div class="pa-2 mb-9"
              v-if="isUserLoggedIn">
-          <v-btn @click="logout"
+          <v-btn @click="onLogout"
                  block>
             <v-icon>mdi-logout</v-icon>Выйти
           </v-btn>
@@ -38,19 +38,32 @@
         </div>
       </template>
     </v-navigation-drawer>
-  </v-app>
+  </v-card>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 export default {
+  data() {
+    return {
+      drawer: this.showDrawer,
+    };
+  },
   props: {
     showDrawer: { type: Boolean, require: true },
     links: { type: Array, require: true },
     isUserLoggedIn: { type: Boolean, require: true },
   },
   methods: {
-    logout() {
-      this.$emit('logout');
+    ...mapActions(['logoutUser']),
+    onLogout() {
+      this.logoutUser();
+      this.$router.push('/');
+    },
+  },
+  watch: {
+    showDrawer() {
+      this.drawer = !this.drawer;
     },
   },
 };

@@ -1,5 +1,11 @@
 {
   "rules": {
+    "aneks": {
+      ".indexOn": ["rating", "time", "reverseTime", "author"]
+    },
+    "memes": {
+      ".indexOn": ["rating", "time", "reverseTime"]
+    },
     ".read": true,
     ".write": "auth != null"
   }

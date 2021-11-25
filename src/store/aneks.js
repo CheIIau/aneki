@@ -16,7 +16,7 @@ import {
   equalTo,
 } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import Anek from '@/classes/AnekClass';
+import { Anek } from '@/classes/index.js';
 
 export default {
   state: {
@@ -44,8 +44,9 @@ export default {
       state.aneks.push({ title, body, author, time });
     },
     loadAneks(state, payload) {
-      if (state.aneks.length != 0) {
-        state.aneks = [...state.aneks, ...payload];
+      //better use the word 'set'
+      if (state.aneks.length !== 0) {
+        state.aneks = [...state.aneks, payload];
       } else {
         state.aneks = payload;
       }
@@ -69,7 +70,7 @@ export default {
       if (!state.bookmarkedAneks.includes(id)) {
         state.bookmarkedAneks.push(id);
       } else {
-        state.bookmarkedAneks = state.bookmarkedAneks.filter((anekId) => anekId != id);
+        state.bookmarkedAneks = state.bookmarkedAneks.filter((anekId) => anekId !== id);
       }
     },
   },
@@ -154,7 +155,7 @@ export default {
 
       try {
         const newAnekRef = await push(anekListRef);
-        const newAnek = new Anek(title, body, userName, Date.now(), userId, 0, 1 - Date.now());
+        const newAnek = new Anek(title, body, userName, Date.now(), userId, 0, 0 - Date.now());
         await set(newAnekRef, newAnek);
         aneksCount++;
         await update(aneksCountRef, { aneksCount });

@@ -49,12 +49,12 @@ export default {
   },
   methods: {
     ...mapActions(['setLoading', 'loadBookmarkedAneks']),
-    renderAneks() {
+    async renderAneks() {
       const db = getDatabase();
       let i = 0;
-      this.aneksId.forEach((anekId) => {
+      this.aneksId.forEach(async (anekId) => {
         const aneksRef = ref(db, 'aneks/' + anekId);
-        get(aneksRef).then((snapshot) => {
+        await get(aneksRef).then((snapshot) => {
           const anek = snapshot.val();
           const newAnek = new Anek(anek.title, anek.body, anek.author, anek.time, anekId, anek.rating);
           this.$set(this.aneks, i, newAnek);
@@ -70,18 +70,18 @@ export default {
     AnekCard,
     Spinner,
   },
-  created() {
-    this.loadBookmarkedAneks();
+  async created() {
+    await this.loadBookmarkedAneks();
     if (this.aneksId.length !== 0) {
-      this.renderAneks();
+      await this.renderAneks();
       this.setLoading(false);
     }
   },
   watch: {
-    aneksId() {
+    async aneksId() {
       if (this.aneksId || this.aneksId.length !== 0) {
         this.aneks = [];
-        this.renderAneks();
+        await this.renderAneks();
         this.setLoading(false);
       }
     },

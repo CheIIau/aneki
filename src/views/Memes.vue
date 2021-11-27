@@ -7,29 +7,55 @@
             sm8
             v-if="!loading"
             xs10>
-      <div v-if="isUserLoggedIn"
-           class="text-right uploadMeme-block">
+      <div class="text-right my-2">
         <span class="hidden-sm-and-down">&nbsp;</span>
-        <div offset-y
-             transition="slide-y-transition">
-          <v-btn class="hidden-sm-and-down"
-                 color="primary"
-                 dark
-                 @click="triggerUpload">Загрузить мемес</v-btn>
-          <v-btn block
-                 class="hidden-md-and-up mb-3"
-                 color="primary"
-                 dark
-                 @click="triggerUpload">
-            Загрузить мемес &nbsp;
-            <v-icon>mdi-file-image-plus-outline</v-icon>
-          </v-btn>
-          <input @change="onFileChange"
-                 ref="fileInput"
-                 type="file"
-                 style="display:none"
-                 accept="image/*">
-        </div>
+        <v-menu offset-y
+                transition="slide-y-transition">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn class="hidden-sm-and-down"
+                   color="primary"
+                   dark
+                   v-bind="attrs"
+                   v-on="on">Сортировать</v-btn>
+            <v-btn block
+                   class="hidden-md-and-up mb-3"
+                   color="primary"
+                   dark
+                   v-bind="attrs"
+                   v-on="on">
+              Сортировать &nbsp;
+              <v-icon>mdi-sort-ascending</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item :key="index"
+                         class="pointer"
+                         v-for="(item, index) in items">
+              <v-list-item-title @click="sortMemes(item.sort)">{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+      <div v-if="isUserLoggedIn"
+           class="text-right my-2">
+        <span class="hidden-sm-and-down">&nbsp;</span>
+        <v-btn class="hidden-sm-and-down"
+               color="primary"
+               dark
+               @click="triggerUpload">Загрузить мемес</v-btn>
+        <v-btn block
+               class="hidden-md-and-up mb-3"
+               color="primary"
+               dark
+               @click="triggerUpload">
+          Загрузить мемес &nbsp;
+          <v-icon>mdi-file-image-plus-outline</v-icon>
+        </v-btn>
+        <input @change="onFileChange"
+               ref="fileInput"
+               type="file"
+               style="display:none"
+               accept="image/*">
       </div>
       <v-flex v-else
               md10
@@ -67,6 +93,7 @@
     </v-flex>
 
     <spinner v-else></spinner>
+
     <modal :imageSrc="imageSrc"
            :showDialog="showDialog"
            @toggleDialog="toggleDialog">
@@ -82,11 +109,14 @@
         </v-btn>
       </template>
     </modal>
+
+    <div ref="observer"
+         class="observer"></div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 import Modal from '@/components/Modal.vue';
 import MemeCard from '@/components/MemeCard.vue';
 import Spinner from '@/components/Spinner.vue';
@@ -98,6 +128,12 @@ export default {
       showDialog: false,
       image: null,
       imageSrc: '',
+      items: [
+        { title: 'Сначала новые', sort: 'new' },
+        { title: 'Сначала старые', sort: 'old' },
+        { title: 'Топ 100', sort: 'rating' },
+      ],
+      sort: 'old',
     };
   },
   components: {
@@ -113,10 +149,46 @@ export default {
     }),
   },
   async created() {
-    await this.fetchOldMemesFromDB();
+    this.clearMemes();
+    await this.oldMemes();
+    const optionsObserver = {
+      rootMargin: '0px',
+      threshold: 1.0,
+    };
+    const callbackObserver = (entries) => {
+      if (entries[0].isIntersecting && this.memes.length !== 0) {
+        const lastMeme = this.memes.at(-1);
+        if (this.sort === 'new') {
+          this.newMemes({ lastMemesVal: lastMeme.reverseTime });
+        } else if (this.sort === 'old') {
+          this.oldMemes({ lastMemesVal: lastMeme.time });
+        } else {
+          return;
+        }
+      }
+    };
+    const observer = new IntersectionObserver(callbackObserver, optionsObserver);
+    observer.observe(this.$refs.observer);
   },
   methods: {
-    ...mapActions(['uploadMeme', 'fetchOldMemesFromDB']),
+    ...mapActions({
+      uploadMeme: 'uploadMeme',
+      oldMemes: 'fetchOldMemesFromDB',
+      newMemes: 'fetchNewMemesFromDB',
+      favouriteMemes: 'fetchFavouriteMemesFromDB',
+    }),
+    ...mapMutations(['clearMemes']),
+    sortMemes(sort) {
+      this.sort = sort;
+      this.clearMemes();
+      if (sort === 'new') {
+        this.newMemes();
+      } else if (sort === 'old') {
+        this.oldMemes();
+      } else if (sort === 'rating') {
+        this.favouriteMemes();
+      }
+    },
     addMeme() {
       this.showDialog = false;
       if (this.image) {
@@ -145,8 +217,11 @@ export default {
 </script>
 
 <style scoped>
-.uploadMeme-block {
-  display: flex;
-  justify-content: flex-end;
+.observer {
+  height: 60px;
+}
+
+.pointer {
+  cursor: pointer;
 }
 </style>

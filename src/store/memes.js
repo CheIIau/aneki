@@ -28,7 +28,7 @@ export default {
   mutations: {
     setMemes(state, payload) {
       if (state.memes.length !== 0) {
-        state.memes = [...state.memes, payload];
+        state.memes = [...state.memes, ...payload];
       } else {
         state.memes = payload;
       }
@@ -63,7 +63,7 @@ export default {
         throw error;
       }
     },
-    // eslint-disable-next-line no-unused-vars
+
     async fetchMemes({ commit }, { reverse = false, sorted = null, lastMemesVal = null }) {
       commit('clearError');
       if (!lastMemesVal) commit('setLoading', true);
@@ -75,7 +75,7 @@ export default {
         if (lastMemesVal) {
           memesRef = query(memesRef, orderByChild(`${sorted}`), startAfter(lastMemesVal), limitToFirst(limit));
         } else {
-          memesRef = query(memesRef, orderByChild(`time`), limitToFirst(limit)); //order
+          memesRef = query(memesRef, orderByChild(`${sorted}`), limitToFirst(limit)); //order
         }
         await new Promise((resolve) => {
           onValue(memesRef, (snapshot) => {
@@ -98,6 +98,7 @@ export default {
             resolve();
           });
         });
+        if (reverse) resultMemes.reverse();
         commit('setMemes', resultMemes);
         commit('setLoading', false);
       } catch (error) {
@@ -106,15 +107,13 @@ export default {
         throw error;
       }
     },
-    fetchOldMemesFromDB({ dispatch, commit }, { lastMemesVal = null } = {}) {
+    fetchOldMemesFromDB({ dispatch }, { lastMemesVal = null } = {}) {
       const sorted = 'time';
-      commit('clearMemes');
       dispatch('fetchMemes', { sorted, lastMemesVal });
     },
 
-    fetchNewMemesFromDB({ dispatch, commit }, { lastMemesVal = null } = {}) {
+    fetchNewMemesFromDB({ dispatch }, { lastMemesVal = null } = {}) {
       const sorted = 'reverseTime';
-      commit('clearMemes');
       dispatch('fetchMemes', { sorted, lastMemesVal });
     },
 

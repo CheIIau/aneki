@@ -88,7 +88,7 @@ export default {
         });
         const db = getDatabase();
         const aneksRef = ref(db, 'bookmarkAneks/' + userId);
-        get(aneksRef).then((snapshot) => {
+        await get(aneksRef).then((snapshot) => {
           const bookmarkedAneks = snapshot.val();
           if (bookmarkedAneks) {
             Object.keys(bookmarkedAneks).forEach((key) => {

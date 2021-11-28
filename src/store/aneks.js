@@ -63,9 +63,6 @@ export default {
     loadAneksCount(state, payload) {
       state.aneksCount = payload;
     },
-    updateRating(state, { id, newRating }) {
-      state.aneks.find((anek) => anek.id === id).rating = newRating;
-    },
     loadBookmarkedAneks(state, id) {
       if (!state.bookmarkedAneks.includes(id)) {
         state.bookmarkedAneks.push(id);
@@ -176,7 +173,6 @@ export default {
       try {
         const db = getDatabase();
         let aneksRef = ref(db, 'aneks');
-        console.log(searchQuery);
         aneksRef = query(aneksRef, orderByChild('author'), equalTo(searchQuery));
         await new Promise((resolve) => {
           onValue(aneksRef, (snapshot) => {
@@ -192,7 +188,6 @@ export default {
                 anek.rating,
                 anek.reverseTime,
               );
-              console.log(newAnek.body);
               Vue.set(resultAneks, i, newAnek);
               ++i;
             });
@@ -210,7 +205,7 @@ export default {
     async fetchAneks({ commit }, { reverse = false, sorted = null, lastAnekVal = null }) {
       commit('clearError');
       if (!lastAnekVal) commit('setLoading', true);
-      const limit = sorted == 'rating' ? 100 : 5;
+      const limit = sorted == 'rating' ? 100 : 10;
       const resultAneks = [];
       try {
         const db = getDatabase();

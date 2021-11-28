@@ -133,7 +133,7 @@ export default {
         { title: 'Сначала старые', sort: 'old' },
         { title: 'Топ 100', sort: 'rating' },
       ],
-      sort: 'old',
+      sort: 'new',
     };
   },
   components: {
@@ -150,7 +150,7 @@ export default {
   },
   async created() {
     this.clearMemes();
-    await this.oldMemes();
+    await this.newMemes();
     const optionsObserver = {
       rootMargin: '0px',
       threshold: 1.0,

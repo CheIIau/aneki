@@ -36,9 +36,12 @@ export default {
     clearMemes(state) {
       state.memes = [];
     },
+    updateRating(state, { id, newRating }) {
+      state.memes.find((meme) => meme.id === id).rating = newRating;
+    },
   },
   actions: {
-    async uploadMeme({ commit, getters }, image) {
+    async uploadMeme({ commit, getters, dispatch }, image) {
       commit('clearError');
       commit('setLoading', true);
       try {
@@ -52,10 +55,12 @@ export default {
         const imageExt = image.name.slice(image.name.lastIndexOf('.'));
         const st = getStorage();
         const memesSt = storRef(st, `memes/${newMemeRef.key}${imageExt}`);
-        const uploadedMeme = await uploadBytes(memesSt, image);
-        console.log(uploadedMeme);
+        await uploadBytes(memesSt, image);
+        commit('clearMemes');
+        dispatch('fetchNewMemesFromDB');
         const imageUrl = await getDownloadURL(memesSt);
         await update(newMemeRef, { imageUrl });
+
         commit('setLoading', false);
       } catch (error) {
         commit('setError', error.message);
@@ -67,7 +72,7 @@ export default {
     async fetchMemes({ commit }, { reverse = false, sorted = null, lastMemesVal = null }) {
       commit('clearError');
       if (!lastMemesVal) commit('setLoading', true);
-      const limit = sorted == 'rating' ? 100 : 5;
+      const limit = sorted == 'rating' ? 100 : 10;
       const resultMemes = [];
       try {
         const db = getDatabase();
@@ -148,6 +153,7 @@ export default {
                 const newRating = snapshot.val().rating + rate;
                 await update(meme, { rating: newRating });
                 await update(ratedUsers, { [userId]: userId });
+                commit('updateRating', { id, newRating });
               }
             });
           } else {

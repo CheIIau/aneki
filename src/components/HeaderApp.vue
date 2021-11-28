@@ -87,10 +87,6 @@ export default {
 </script>
 
 <style scoped>
-.pointer {
-  cursor: pointer;
-}
-
 .blank {
   height: 100%;
   margin-right: 9em;

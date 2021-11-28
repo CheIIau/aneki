@@ -10,7 +10,10 @@
         </div>
         <v-row class="mr-1 mb-1 mt-2"
                app>
-          <v-card-subtitle>Автор: {{author}} </v-card-subtitle>
+          <router-link class="author-link"
+                       :to="{ path: 'search', query: { user: `${author}` } }">
+            <v-card-subtitle>Автор: {{author}} </v-card-subtitle>
+          </router-link>
           <v-spacer></v-spacer>
           <v-card-subtitle class="d-none d-sm-flex"> Выложено: {{formatDate(time)}} </v-card-subtitle>
         </v-row>
@@ -105,5 +108,9 @@ export default {
   white-space: pre-line;
   word-wrap: break-word;
   font-family: inherit;
+}
+.author-link {
+  color: rgba(0, 0, 0, 0.6);
+  text-decoration: none;
 }
 </style>

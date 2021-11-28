@@ -220,8 +220,4 @@ export default {
 .observer {
   height: 60px;
 }
-
-.pointer {
-  cursor: pointer;
-}
 </style>

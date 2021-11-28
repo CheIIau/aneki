@@ -45,9 +45,9 @@ import Spinner from '@/components/Spinner.vue';
 import { debounce } from '@/functions/index.js';
 
 export default {
+  props: ['user'],
   data() {
     return {
-      debouncedSearch: null,
       searchQuery: '',
       searchRules: [(v) => !v || v.length >= 3 || 'Запрос должен быть длиннее 3 символов'],
     };
@@ -61,11 +61,15 @@ export default {
   },
   created() {
     this.fetchSearchedAneks = debounce(this.fetchSearchedAneks, 400);
+    if (this.$route.query?.user !== '') {
+      this.searchQuery = this.$route.query.user;
+    }
   },
   watch: {
     searchQuery() {
-      if (this.searchQuery.length >= 3) {
+      if (this.searchQuery?.length >= 3) {
         this.fetchSearchedAneks(this.searchQuery);
+        window.history.pushState(null, document.title, `${window.location.pathname}?user=${this.searchQuery}`);
       }
     },
   },

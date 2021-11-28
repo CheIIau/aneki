@@ -44,7 +44,8 @@
             offset-xs1
             sm8
             v-if="!loading"
-            xs10>
+            xs10
+            class="anek-content">
       <anek-card v-for="anek in aneks"
                  :author="anek.author"
                  :body="anek.body"
@@ -121,11 +122,16 @@ export default {
 };
 </script>
 
-<style>
-.pointer {
-  cursor: pointer;
-}
+<style scoped>
 .observer {
   height: 60px;
+}
+.anek-content {
+  margin-top: -30px;
+}
+@media all and (max-width: 960px) {
+  .anek-content {
+    margin-top: 0px;
+  }
 }
 </style>

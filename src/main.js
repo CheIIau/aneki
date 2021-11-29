@@ -5,7 +5,6 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-
 Vue.config.productionTip = false;
 
 new Vue({
@@ -15,14 +14,14 @@ new Vue({
   render: (h) => h(App),
   created() {
     const firebaseConfig = {
-      apiKey: 'AIzaSyA74cum2Hs1H8ybm06JFhL_9JsqNcB2gw0',
-      authDomain: 'aneki-af274.firebaseapp.com',
-      projectId: 'aneki-af274',
-      storageBucket: 'aneki-af274.appspot.com',
-      messagingSenderId: '27394706899',
-      appId: '1:27394706899:web:31a7aa8c5cad1549fb7326',
-      measurementId: 'G-3YLWDV868S',
-      databaseURL: 'aneki-af274-default-rtdb.europe-west1.firebasedatabase.app',
+      apiKey: process.env.VUE_APP_API_TOKEN,
+      authDomain: process.env.VUE_APP_AUTH_DOMAIN,
+      projectId: process.env.VUE_APP_PROJECT_ID,
+      storageBucket: process.env.VUE_APP_STORAGE_BUCKET,
+      messagingSenderId: process.env.VUE_APP_MESSAGING_SENDER_ID,
+      appId: process.env.VUE_APP_APP_ID,
+      measurementId: process.env.VUE_APP_MEASUREMENT_ID,
+      databaseURL: process.env.VUE_APP_DATABASE_URL,
     };
     initializeApp(firebaseConfig);
     const auth = getAuth();

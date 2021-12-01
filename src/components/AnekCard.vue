@@ -113,4 +113,7 @@ export default {
   color: rgba(0, 0, 0, 0.6);
   text-decoration: none;
 }
+.author-link:hover {
+  text-decoration: underline;
+}
 </style>

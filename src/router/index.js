@@ -10,6 +10,8 @@ import E404 from '@/views/E404.vue';
 import Search from '@/views/Search.vue';
 import AuthGuard from './auth-guard';
 import Memes from '@/views/Memes';
+import ChatList from '@/views/ChatList';
+import Chat from '@/views/Chat';
 
 Vue.use(VueRouter);
 
@@ -55,6 +57,23 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+  },
+  {
+    path: '/chatlist',
+    name: 'ChatList',
+    component: ChatList,
+    beforeEnter: AuthGuard,
+  },
+  {
+    path: '/chat/:id',
+    name: 'Chat',
+    component: Chat,
+    props: true,
+    beforeEnter: AuthGuard,
+  },
+  {
+    path: '/404',
+    component: E404,
   },
   {
     path: '/:pathMatch(.*)*',

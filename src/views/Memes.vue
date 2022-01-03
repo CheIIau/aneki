@@ -86,7 +86,8 @@
               sm8
               v-if="!loading"
               xs10
-              class="memes-content">
+              class="memes-content"
+              :class="authMessageClasses">
         <meme-card v-for="meme in memes"
                    :author="meme.author"
                    :imageUrl="meme.imageUrl"
@@ -152,6 +153,9 @@ export default {
       loading: 'loading',
       isUserLoggedIn: 'isUserLoggedIn',
     }),
+    authMessageClasses() {
+      return this.isUserLoggedIn ? 'memes-content_authorized' : 'memes-content_unauthorized';
+    },
   },
   async created() {
     this.clearMemes();
@@ -228,8 +232,11 @@ export default {
 .button-group {
   align-self: flex-end;
 }
-.memes-content {
+.memes-content_authorized {
   margin-top: -90px;
+}
+.memes-content_unauthorized {
+  margin-top: -45px;
 }
 @media all and (max-width: 960px) {
   .memes-content {

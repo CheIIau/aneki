@@ -1,4 +1,7 @@
 module.exports = {
+  devServer: {
+    proxy: 'http://localhost:3000',
+  },
   pluginOptions: {
     webpackBundleAnalyzer: {
       openAnalyzer: false,
@@ -18,7 +21,7 @@ module.exports = {
       },
     },
   },
-  productionSourceMap: false,
+  productionSourceMap: true,
 
   chainWebpack: (config) => {
     config.plugin('html').tap((args) => {
@@ -35,5 +38,12 @@ module.exports = {
         },
       },
     ]);
+    config.optimization.minimizer('terser').tap((args) => {
+      args[0].terserOptions.output = {
+        ...args[0].terserOptions.output,
+        comments: false,
+      };
+      return args;
+    });
   },
 };

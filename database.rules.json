@@ -6,6 +6,7 @@
     "memes": {
       ".indexOn": ["rating", "time", "reverseTime"]
     },
+    "chat/messages/-MrHikeu5tuurBr_f51X": {".indexOn": ["time"]},
     ".read": true,
     ".write": "auth != null"
   }

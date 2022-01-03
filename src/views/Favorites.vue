@@ -1,37 +1,35 @@
 <template>
-  <v-app>
-    <template>
-      <v-flex md6
-              offset-md3
-              offset-sm2
-              offset-xs1
-              sm8
-              v-if="!loading && aneksId.length !== 0"
-              xs10>
-        <anek-card :author="anek.author"
-                   :body="anek.body"
-                   :id="anek.id"
-                   :key="anek.id"
-                   :rating="anek.rating"
-                   :time="anek.time"
-                   :title="anek.title"
-                   v-for="anek in aneks"></anek-card>
-      </v-flex>
-      <v-container fluid
-                   v-else-if="!loading && aneksId.length == 0">
-        <v-layout justify-center>
-          <v-flex fill-height
-                  md6
-                  sm8
-                  text-center
-                  xs12>
-            <p class="text-h4 primary--text">У вас нет анеков в закладках</p>
-          </v-flex>
-        </v-layout>
-      </v-container>
-      <spinner v-else></spinner>
-    </template>
-  </v-app>
+  <div>
+    <v-flex md6
+            offset-md3
+            offset-sm2
+            offset-xs1
+            sm8
+            v-if="!loading && bookmarkedAneksId.length !== 0"
+            xs10>
+      <anek-card :author="anek.author"
+                 :body="anek.body"
+                 :id="anek.id"
+                 :key="anek.id"
+                 :rating="anek.rating"
+                 :time="anek.time"
+                 :title="anek.title"
+                 v-for="anek in aneks"></anek-card>
+    </v-flex>
+    <v-container fluid
+                 v-else-if="!loading && bookmarkedAneksId.length == 0">
+      <v-layout justify-center>
+        <v-flex fill-height
+                md6
+                sm8
+                text-center
+                xs12>
+          <p class="text-h4 primary--text">У вас нет анеков в закладках</p>
+        </v-flex>
+      </v-layout>
+    </v-container>
+    <spinner v-else></spinner>
+  </div>
 </template>
 
 <script>
@@ -52,7 +50,7 @@ export default {
     async renderAneks() {
       const db = getDatabase();
       let i = 0;
-      this.aneksId.forEach(async (anekId) => {
+      this.bookmarkedAneksId.forEach(async (anekId) => {
         const aneksRef = ref(db, 'aneks/' + anekId);
         await get(aneksRef).then((snapshot) => {
           const anek = snapshot.val();
@@ -64,22 +62,23 @@ export default {
     },
   },
   computed: {
-    ...mapGetters({ aneksId: 'getBookmarkedAneks', loading: 'loading' }),
+    ...mapGetters({ bookmarkedAneksId: 'getBookmarkedAneks', loading: 'loading' }),
   },
   components: {
     AnekCard,
     Spinner,
   },
   async created() {
-    await this.loadBookmarkedAneks();
-    if (this.aneksId.length !== 0) {
+    if (this.bookmarkedAneksId?.length !== 0) {
       await this.renderAneks();
       this.setLoading(false);
+    } else {
+      await this.loadBookmarkedAneks();
     }
   },
   watch: {
-    async aneksId() {
-      if (this.aneksId || this.aneksId.length !== 0) {
+    async bookmarkedAneksId() {
+      if (this.bookmarkedAneksId || this.bookmarkedAneksId.length !== 0) {
         this.aneks = [];
         await this.renderAneks();
         this.setLoading(false);

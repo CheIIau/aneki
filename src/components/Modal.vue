@@ -1,6 +1,7 @@
 <template>
   <div class="text-center">
     <v-dialog v-model="dialog"
+              @click:outside="changeDialog"
               width="500">
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
@@ -10,6 +11,7 @@
                height="250"
                contain
                :src="imageSrc"></v-img>
+        <slot name="modal-body"></slot>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>

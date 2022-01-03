@@ -45,7 +45,7 @@ export default {
       commit('clearError');
       commit('setLoading', true);
       try {
-        const user = getters.user;
+        const user = getters?.user;
         const db = getDatabase();
         const memesRef = ref(db, 'memes');
         const newMemeRef = await push(memesRef);
@@ -136,7 +136,7 @@ export default {
         const db = getDatabase();
         const memesRef = ref(db, 'memes/');
         const meme = child(memesRef, `${id}`);
-        const userId = getters.user.id;
+        const userId = getters?.user.id;
         await get(meme).then(async (snapshot) => {
           if (snapshot.exists()) {
             const ratedUsers = child(meme, `/ratedUsers`);
@@ -145,7 +145,7 @@ export default {
               const ratedUsersObj = s.val();
               Object.keys(ratedUsersObj).forEach((key) => {
                 if (ratedUsersObj[key] == userId) {
-                  commit('setError', 'Вы уже голосовали за этот анек');
+                  commit('setError', 'Вы уже голосовали за этот мем');
                   alreadyVoted = true;
                 }
               });

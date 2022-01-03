@@ -40,9 +40,6 @@ export default {
     },
   },
   mutations: {
-    addAnek(state, { title, body, author, time }) {
-      state.aneks.push({ title, body, author, time });
-    },
     loadAneks(state, payload) {
       //better use the word 'set'
       if (state.aneks.length !== 0) {

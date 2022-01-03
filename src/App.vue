@@ -57,14 +57,15 @@ export default {
           { title: 'Закладки', icon: 'mdi-bookmark', url: '/favs' },
           { title: 'Добавить анек', icon: 'mdi-file-plus', url: '/new' },
           { title: 'Мемесы', icon: 'mdi-one-up', url: '/memes' },
+          { title: 'Чат', icon: 'mdi-chat', url: '/chatlist' },
         ];
       }
       return [
         { title: 'Все анеки', icon: 'mdi-format-list-bulleted', url: '/' },
         { title: 'Топ 100', icon: 'mdi-star', url: '/best' },
         { title: 'Поиск', icon: 'mdi-magnify', url: '/search' },
-        { title: 'Регистрация', icon: 'mdi-account-plus', url: '/registration' },
         { title: 'Мемесы', icon: 'mdi-one-up', url: '/memes' },
+        { title: 'Регистрация', icon: 'mdi-account-plus', url: '/registration' },
       ];
     },
   },

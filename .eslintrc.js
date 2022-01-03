@@ -16,6 +16,5 @@ module.exports = {
     // 'prettier/prettier': 'warn',
     'no-var': 'error',
     'prefer-const': 'error',
-    // 'max-len': ['error', { code: 240 }],
   },
 };

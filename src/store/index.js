@@ -4,6 +4,7 @@ import aneks from './aneks';
 import user from './user';
 import shared from './shared';
 import memes from './memes';
+import chats from './chats';
 
 Vue.use(Vuex);
 
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     aneks,
     shared,
     memes,
+    chats,
   },
   state: {},
   getters: {},

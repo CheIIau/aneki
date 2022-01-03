@@ -81,12 +81,14 @@ export default {
       aneks: 'getAneks',
       loading: 'loading',
       isUserLoggedIn: 'isUserLoggedIn',
+      getBookmarkedAneks: 'getBookmarkedAneks',
     }),
   },
   methods: {
     ...mapActions({
       newAneks: 'fetchNewAneksFromDB',
       oldAneks: 'fetchOldAneksFromDB',
+      loadBookmarkedAneks: 'loadBookmarkedAneks',
     }),
     ...mapMutations(['clearAneks']),
     sortAneks(sort) {
@@ -102,6 +104,11 @@ export default {
   async created() {
     this.clearAneks();
     await this.newAneks();
+
+    if (this.getBookmarkedAneks?.length === 0) {
+      await this.loadBookmarkedAneks();
+    }
+
     const optionsObserver = {
       rootMargin: '0px',
       threshold: 1.0,

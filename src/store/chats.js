@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   getDatabase,
   ref,
@@ -10,9 +9,7 @@ import {
   query,
   orderByKey,
   limitToLast,
-  endAt,
   endBefore,
-  onChildAdded,
 } from 'firebase/database';
 import Vue from 'vue';
 import { formatDate } from '../functions';
@@ -155,12 +152,12 @@ export default {
       commit('clearError');
       commit('setLocalLoading', true);
       const resultMessages = [];
-      const limit = 15;
+      const limit = 40;
       try {
         const db = getDatabase();
         let messagesRef = ref(db, `chat/messages/${chatId}`);
         if (lastMessageId) {
-          messagesRef = query(messagesRef, orderByKey(), endAt(lastMessageId), limitToLast(limit));
+          messagesRef = query(messagesRef, orderByKey(), endBefore(lastMessageId), limitToLast(limit));
         } else {
           messagesRef = query(messagesRef, orderByKey(), limitToLast(limit));
         }
@@ -196,7 +193,6 @@ export default {
       const updates = {};
       const createdTime = Date.now();
       const userName = getters?.user.nickname;
-      const resultMessages = [];
       try {
         const db = getDatabase();
         const messagesRef = ref(db, 'chat/messages/');

@@ -2,7 +2,7 @@
   <div>
     <div class="message"
          v-for="(message,i) in messages"
-         :key="i"
+         :key="message.key"
          :class="{own: message.userName == user.nickname}">
       <div class="username"
            v-if="i>0 && messages[i-1].userName != message.userName">{{message.userName}}</div>

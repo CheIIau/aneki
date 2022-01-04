@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import Vue from 'vue';
 import {
   getDatabase,
@@ -17,6 +16,7 @@ import {
 } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Anek } from '@/classes/index.js';
+import { ANEKS_LIMIT, ANEKS_RATED_LIMIT } from '../constants';
 
 export default {
   state: {
@@ -202,7 +202,7 @@ export default {
     async fetchAneks({ commit }, { reverse = false, sorted = null, lastAnekVal = null }) {
       commit('clearError');
       if (!lastAnekVal) commit('setLoading', true);
-      const limit = sorted == 'rating' ? 100 : 10;
+      const limit = sorted == 'rating' ? ANEKS_RATED_LIMIT : ANEKS_LIMIT;
       const resultAneks = [];
       try {
         const db = getDatabase();

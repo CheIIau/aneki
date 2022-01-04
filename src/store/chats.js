@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   getDatabase,
   ref,
@@ -10,9 +11,11 @@ import {
   orderByKey,
   limitToLast,
   endBefore,
+  onChildAdded,
 } from 'firebase/database';
 import Vue from 'vue';
 import { formatDate } from '../functions';
+import { MESSAGES_LIMIT } from '../constants';
 
 export default {
   state: {
@@ -41,6 +44,9 @@ export default {
       } else {
         state.messages = payload;
       }
+    },
+    addMessageToEnd(state, payload) {
+      state.messages = [...state.messages, ...payload];
     },
     setChatsKeys(state, payload) {
       state.chatsKeys = payload;
@@ -152,7 +158,7 @@ export default {
       commit('clearError');
       commit('setLocalLoading', true);
       const resultMessages = [];
-      const limit = 40;
+      const limit = MESSAGES_LIMIT;
       try {
         const db = getDatabase();
         let messagesRef = ref(db, `chat/messages/${chatId}`);

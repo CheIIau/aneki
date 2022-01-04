@@ -48,10 +48,12 @@
 </template>
 
 <script>
+import { getDatabase, ref, onChildAdded } from 'firebase/database';
 import ChatMessages from '../components/Messages.vue';
 import ChatListColumn from '../components/ChatListColumn.vue';
 import { mapActions, mapGetters } from 'vuex';
 import Spinner from '@/components/Spinner.vue';
+import { MESSAGES_LIMIT } from '../constants';
 export default {
   data() {
     return {
@@ -71,12 +73,35 @@ export default {
     ChatMessages,
   },
   methods: {
-    ...mapActions(['loadChatsKeys', 'setLoading', 'loadMessages', 'addMessage', 'watchForUpdates']),
+    ...mapActions(['loadChatsKeys', 'setLoading', 'loadMessages', 'addMessage']),
     async sendMessage(message) {
       if (message !== '') {
         this.addMessage({ message: message, chatId: this.chatId });
       }
       this.message = '';
+    },
+    startObserving() {
+      const optionsObserver = {
+        rootMargin: '0px',
+        threshold: 1.0,
+      };
+      const callbackObserver = async (entries) => {
+        if (entries[0].isIntersecting && this.messages.length !== 0) {
+          const lastMessageId = this.messages[0].key;
+          await this.loadMessages({ chatId: this.chatId, lastMessageId });
+        }
+      };
+      const observer = new IntersectionObserver(callbackObserver, optionsObserver);
+      observer.observe(this.$refs.observer);
+    },
+    onMessageAdded() {
+      const db = getDatabase();
+      const dbRef = ref(db, `chat/messages/${this.chatId}`);
+      onChildAdded(dbRef, (data) => {
+        if (this.messages.length > MESSAGES_LIMIT) {
+          this.$store.commit('addMessageToEnd', [data.val()]);
+        }
+      });
     },
   },
   async beforeMount() {
@@ -87,22 +112,12 @@ export default {
   },
   async mounted() {
     await this.loadMessages({ chatId: this.chatId });
-
-    const optionsObserver = {
-      rootMargin: '0px',
-      threshold: 1.0,
-    };
-    const callbackObserver = async (entries) => {
-      if (entries[0].isIntersecting && this.messages.length !== 0) {
-        const lastMessageId = this.messages[0].key;
-        await this.loadMessages({ chatId: this.chatId, lastMessageId });
-      }
-    };
-    const observer = new IntersectionObserver(callbackObserver, optionsObserver);
-    observer.observe(this.$refs.observer);
+    this.startObserving();
 
     const el = this.$refs.chatContainer;
     el.scrollTop = el.scrollHeight - el.clientHeight;
+
+    this.onMessageAdded();
   },
   computed: {
     ...mapGetters({ chatKeys: 'getChatsKeys', loading: 'loading', messages: 'getMessages' }),

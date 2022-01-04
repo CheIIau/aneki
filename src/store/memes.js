@@ -15,6 +15,7 @@ import {
 } from 'firebase/database';
 import Vue from 'vue';
 import { Meme } from '@/classes/index.js';
+import { MEMES_LIMIT, MEMES_RATED_LIMIT } from '../constants';
 
 export default {
   state: {
@@ -72,7 +73,7 @@ export default {
     async fetchMemes({ commit }, { reverse = false, sorted = null, lastMemesVal = null }) {
       commit('clearError');
       if (!lastMemesVal) commit('setLoading', true);
-      const limit = sorted == 'rating' ? 100 : 10;
+      const limit = sorted == 'rating' ? MEMES_RATED_LIMIT : MEMES_LIMIT;
       const resultMemes = [];
       try {
         const db = getDatabase();
@@ -80,7 +81,7 @@ export default {
         if (lastMemesVal) {
           memesRef = query(memesRef, orderByChild(`${sorted}`), startAfter(lastMemesVal), limitToFirst(limit));
         } else {
-          memesRef = query(memesRef, orderByChild(`${sorted}`), limitToFirst(limit)); //order
+          memesRef = query(memesRef, orderByChild(`${sorted}`), limitToFirst(limit));
         }
         await new Promise((resolve) => {
           onValue(memesRef, (snapshot) => {

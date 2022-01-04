@@ -113,10 +113,9 @@ export default {
   async mounted() {
     await this.loadMessages({ chatId: this.chatId });
     this.startObserving();
-
     const el = this.$refs.chatContainer;
     el.scrollTop = el.scrollHeight - el.clientHeight;
-
+    this.scrollTopMessages = el.scrollHeight;
     this.onMessageAdded();
   },
   computed: {
@@ -205,6 +204,5 @@ export default {
 }
 .observer {
   height: 10px;
-  background-color: yellow;
 }
 </style>

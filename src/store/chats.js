@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   getDatabase,
   ref,
@@ -11,7 +10,6 @@ import {
   orderByKey,
   limitToLast,
   endBefore,
-  onChildAdded,
 } from 'firebase/database';
 import Vue from 'vue';
 import { formatDate } from '../functions';
@@ -50,6 +48,9 @@ export default {
     },
     setChatsKeys(state, payload) {
       state.chatsKeys = payload;
+    },
+    clearMessages(state) {
+      state.messages = [];
     },
   },
   actions: {
@@ -185,11 +186,12 @@ export default {
             resolve();
           });
         });
-        if (resultMessages.length === 1) {
-          return;
+        if (resultMessages.length === 1 || resultMessages.length === 0) {
+          return false;
         }
         commit('setMessages', resultMessages);
         commit('setLocalLoading', false);
+        return true;
       } catch (error) {
         commit('setError', error.message);
         commit('setLocalLoading', false);

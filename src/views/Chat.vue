@@ -145,6 +145,7 @@ export default {
     },
   },
   beforeDestroy() {
+    this.clearMessages();
     off(this.messagesDBRef);
   },
   watch: {

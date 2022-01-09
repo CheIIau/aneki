@@ -11,21 +11,21 @@
             align="center">
           Поделиться анекдотом
         </h1>
-        <v-form v-model="valid"
-                ref="form"
+        <v-form ref="form"
+                v-model="valid"
                 validation
                 class="mb-6">
-          <v-text-field prepend-icon="mdi-format-title"
+          <v-text-field v-model.trim="title"
+                        prepend-icon="mdi-format-title"
                         name="title"
                         label="Заголовок анека (если нужен)"
                         type="text"
-                        v-model.trim="title"
                         :rules="titleRules"></v-text-field>
-          <v-textarea prepend-icon="mdi-lock"
+          <v-textarea v-model.trim="body"
+                      prepend-icon="mdi-lock"
                       name="body"
                       label="Анекдот"
                       type="text"
-                      v-model.trim="body"
                       counter="true"
                       auto-grow
                       rows="3"
@@ -37,7 +37,9 @@
             <v-btn color="success"
                    :loading="loading"
                    :disabled="!valid || loading"
-                   @click="createAnek">Добавить анек</v-btn>
+                   @click="createAnek">
+              Добавить анек
+            </v-btn>
           </v-flex>
         </v-layout>
       </v-flex>

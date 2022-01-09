@@ -3,19 +3,21 @@
     <v-card class="max-auto mb-7">
       <v-card-text>
         <p class="text-h4 text--primary">
-          {{title}}
+          {{ title }}
         </p>
         <div class="text--primary anek-body">
-          {{body}}
+          {{ body }}
         </div>
         <v-row class="mr-1 mb-1 mt-2"
                app>
           <router-link class="author-link"
                        :to="{ path: 'search', query: { user: `${author}` } }">
-            <v-card-subtitle>Автор: {{author}} </v-card-subtitle>
+            <v-card-subtitle>Автор: {{ author }} </v-card-subtitle>
           </router-link>
           <v-spacer></v-spacer>
-          <v-card-subtitle class="d-none d-sm-flex"> Выложено: {{formatDate(time)}} </v-card-subtitle>
+          <v-card-subtitle class="d-none d-sm-flex">
+            Выложено: {{ formatDate(time) }}
+          </v-card-subtitle>
         </v-row>
         <v-card-actions>
           <v-btn icon
@@ -30,7 +32,7 @@
                  @click="onChangeVote(id, 'up')">
             <v-icon>mdi-arrow-up-bold</v-icon>
           </v-btn>
-          <span> {{rating}}</span>
+          <span> {{ rating }}</span>
           <v-btn icon
                  :color="arrowDownColor"
                  @click="onChangeVote(id, 'down')">
@@ -110,7 +112,7 @@ export default {
   font-family: inherit;
 }
 .author-link {
-  color: rgba(0, 0, 0, 0.6);
+  color: #777777;
   text-decoration: none;
 }
 .author-link:hover {

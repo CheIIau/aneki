@@ -76,6 +76,9 @@ export default {
       try {
         await new Promise((resolve) => {
           onAuthStateChanged(auth, (user) => {
+            if (user === null) {
+              return;
+            }
             userId = user.uid;
             resolve();
           });
@@ -108,10 +111,20 @@ export default {
       try {
         await new Promise((resolve) => {
           onAuthStateChanged(auth, (user) => {
+            if (user === null) {
+              return;
+            }
             userId = user.uid;
           });
           resolve();
         });
+
+        if (userId === null) {
+          commit('setLocalLoading', false);
+          commit('setError', 'Чтобы добавить анек в избранное, необходимо зарегистрироваться');
+          return;
+        }
+        
         const db = getDatabase();
         anekRef = ref(db, 'bookmarkAneks/' + userId);
         if (!getters.getBookmarkedAneks.includes(id)) {

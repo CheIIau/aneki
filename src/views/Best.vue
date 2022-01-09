@@ -1,20 +1,20 @@
 <template>
   <v-app>
-    <v-flex md6
+    <v-flex v-if="!loading"
+            md6
             offset-md3
             offset-sm2
             offset-xs1
             sm8
-            v-if="!loading"
             xs10>
-      <anek-card :author="anek.author"
-                 :body="anek.body"
+      <anek-card v-for="anek in aneks"
                  :id="anek.id"
                  :key="anek.id"
+                 :author="anek.author"
+                 :body="anek.body"
                  :rating="anek.rating"
                  :time="anek.time"
-                 :title="anek.title"
-                 v-for="anek in aneks"></anek-card>
+                 :title="anek.title"></anek-card>
     </v-flex>
     <spinner v-else></spinner>
   </v-app>
@@ -33,15 +33,15 @@ export default {
       loading: 'loading',
     }),
   },
+  created() {
+    this.clearAneks();
+    this.favouriteAneks();
+  },
   methods: {
     ...mapActions({
       favouriteAneks: 'fetchFavouriteAneksFromDB',
     }),
     ...mapMutations(['clearAneks']),
-  },
-  created() {
-    this.clearAneks();
-    this.favouriteAneks();
   },
 };
 </script>

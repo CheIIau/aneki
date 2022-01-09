@@ -1,11 +1,11 @@
 <template>
   <v-app>
-    <drawer :showDrawer="showDrawer"
+    <drawer :show-drawer="showDrawer"
             :links="links"
-            :isUserLoggedIn="isUserLoggedIn"></drawer>
-    <header-app @toggleDrawer="toggleDrawer"
-                :links="links"
-                :isUserLoggedIn="isUserLoggedIn"></header-app>
+            :is-user-logged-in="isUserLoggedIn"></drawer>
+    <header-app :links="links"
+                :is-user-logged-in="isUserLoggedIn"
+                @toggleDrawer="toggleDrawer"></header-app>
     <v-main class="mt-6">
       <transition name="fade-transition"
                   mode="out-in"
@@ -13,6 +13,14 @@
                   appear-active-class="fade-transition">
         <router-view />
       </transition>
+      <v-btn class="mx-2 dark-mode hidden-sm-and-down"
+             fab
+             fixed
+             dark
+             small
+             @click="changeTheme">
+        <v-icon>mdi-weather-night</v-icon>
+      </v-btn>
     </v-main>
     <template v-if="error">
       <v-snackbar v-model="snackbar"
@@ -29,7 +37,6 @@
       </v-snackbar>
     </template>
   </v-app>
-
 </template>
 
 <script>
@@ -57,7 +64,6 @@ export default {
           { title: 'Закладки', icon: 'mdi-bookmark', url: '/favs' },
           { title: 'Добавить анек', icon: 'mdi-file-plus', url: '/new' },
           { title: 'Мемесы', icon: 'mdi-one-up', url: '/memes' },
-          { title: 'Чат', icon: 'mdi-chat', url: '/chatlist' },
         ];
       }
       return [
@@ -65,6 +71,7 @@ export default {
         { title: 'Топ 100', icon: 'mdi-star', url: '/best' },
         { title: 'Поиск', icon: 'mdi-magnify', url: '/search' },
         { title: 'Мемесы', icon: 'mdi-one-up', url: '/memes' },
+        { title: 'Чат', icon: 'mdi-chat', url: '/chatlist' },
         { title: 'Регистрация', icon: 'mdi-account-plus', url: '/registration' },
       ];
     },
@@ -82,6 +89,9 @@ export default {
     toggleDrawer() {
       this.showDrawer = !this.showDrawer;
     },
+    changeTheme() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+    },
   },
 };
 </script>
@@ -89,5 +99,9 @@ export default {
 <style>
 .pointer {
   cursor: pointer;
+}
+.dark-mode {
+  bottom: 15px;
+  right: 15px;
 }
 </style>

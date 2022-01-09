@@ -11,7 +11,6 @@ new Vue({
   router,
   store,
   vuetify,
-  render: (h) => h(App),
   created() {
     const firebaseConfig = {
       apiKey: process.env.VUE_APP_API_TOKEN,
@@ -33,4 +32,5 @@ new Vue({
       }
     });
   },
+  render: (h) => h(App),
 }).$mount('#app');

@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid
-               v-if="existChatId"
+  <v-container v-if="existChatId"
+               fluid
                class="chat-layout">
     <v-row no-gutters
            class="chat-row">
@@ -9,8 +9,8 @@
         <chat-list-column></chat-list-column>
       </v-col>
       <v-col class="chat-coloumn">
-        <div class="chat-container"
-             ref="chatContainer">
+        <div ref="chatContainer"
+             class="chat-container">
           <div ref="observer"
                class="observer"></div>
           <chat-messages :messages="messages"></chat-messages>
@@ -26,13 +26,15 @@
                  @click="chatListDrawer =! chatListDrawer">
             <v-icon>mdi-chat-processing</v-icon>
           </v-btn>
-          <input type="text"
+          <input v-model="message"
+                 type="text"
                  placeholder="Напишите сообщение..."
-                 @keyup.enter="sendMessage(message)"
-                 v-model="message">
+                 @keyup.enter="sendMessage(message)">
           <v-spacer></v-spacer>
           <v-icon class="chat-sendIcon"
-                  @click="sendMessage(message)">mdi-send</v-icon>
+                  @click="sendMessage(message)">
+            mdi-send
+          </v-icon>
         </div>
       </v-col>
     </v-row>
@@ -55,6 +57,19 @@ import ChatMessages from '../components/Messages.vue';
 import ChatListColumn from '../components/ChatListColumn.vue';
 import Spinner from '@/components/Spinner.vue';
 export default {
+  components: {
+    ChatListColumn,
+    Spinner,
+    ChatMessages,
+  },
+
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+
   data() {
     return {
       message: '',
@@ -62,17 +77,57 @@ export default {
       loadMessagesOnScroll: true,
     };
   },
-  props: {
-    id: {
-      type: String,
-      required: true,
+
+  computed: {
+    ...mapGetters({ chatKeys: 'getChatsKeys', loading: 'loading', messages: 'getMessages' }),
+    chatId() {
+      return this.id;
+    },
+    chatsKeys() {
+      return this.$store.getters.getChatsKeys;
+    },
+    existChatId() {
+      return this.chatsKeys.includes(this.chatId);
+    },
+    messagesDBRef() {
+      const db = getDatabase();
+      const dbRef = ref(db, `chat/messages/${this.chatId}`);
+      return dbRef;
     },
   },
-  components: {
-    ChatListColumn,
-    Spinner,
-    ChatMessages,
+
+  watch: {
+    messages() {
+      this.$nextTick().then(() => {
+        const el = this.$refs.chatContainer;
+        if (el.scrollHeight - el.clientHeight - 200 < el.scrollTop) {
+          el.scrollTop = el.scrollHeight - el.clientHeight;
+        }
+      });
+    },
+    chatId() {
+      this.clearMessages();
+      off(this.messagesDBRef);
+      this.messageLoadHandler();
+    },
   },
+
+  async beforeMount() {
+    await this.loadChatsKeys();
+    if (!this.existChatId) {
+      this.$router.push('/404');
+    }
+  },
+
+  async mounted() {
+    this.messageLoadHandler();
+  },
+
+  beforeDestroy() {
+    this.clearMessages();
+    off(this.messagesDBRef);
+  },
+
   methods: {
     ...mapActions(['loadChatsKeys', 'setLoading', 'loadMessages', 'addMessage']),
     ...mapMutations(['clearMessages']),
@@ -115,52 +170,6 @@ export default {
       el.scrollTop = el.scrollHeight - el.clientHeight;
       this.scrollTopMessages = el.scrollHeight;
       this.onMessageAdded();
-    },
-  },
-  async beforeMount() {
-    await this.loadChatsKeys();
-    if (!this.existChatId) {
-      this.$router.push('/404');
-    }
-  },
-  async mounted() {
-    this.messageLoadHandler();
-  },
-  computed: {
-    ...mapGetters({ chatKeys: 'getChatsKeys', loading: 'loading', messages: 'getMessages' }),
-
-    chatId() {
-      return this.id;
-    },
-    chatsKeys() {
-      return this.$store.getters.getChatsKeys;
-    },
-    existChatId() {
-      return this.chatsKeys.includes(this.chatId);
-    },
-    messagesDBRef() {
-      const db = getDatabase();
-      const dbRef = ref(db, `chat/messages/${this.chatId}`);
-      return dbRef;
-    },
-  },
-  beforeDestroy() {
-    this.clearMessages();
-    off(this.messagesDBRef);
-  },
-  watch: {
-    messages() {
-      this.$nextTick().then(() => {
-        const el = this.$refs.chatContainer;
-        if (el.scrollHeight - el.clientHeight - 200 < el.scrollTop) {
-          el.scrollTop = el.scrollHeight - el.clientHeight;
-        }
-      });
-    },
-    chatId() {
-      this.clearMessages();
-      off(this.messagesDBRef);
-      this.messageLoadHandler();
     },
   },
 };

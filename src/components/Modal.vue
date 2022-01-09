@@ -1,8 +1,8 @@
 <template>
   <div class="text-center">
     <v-dialog v-model="dialog"
-              @click:outside="changeDialog"
-              width="500">
+              width="500"
+              @click:outside="changeDialog">
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
           <slot name="header"></slot>
@@ -20,7 +20,9 @@
                  @click="changeDialog">
             Закрыть
           </v-btn>
-          <slot name="button">ОК</slot>
+          <slot name="button">
+            ОК
+          </slot>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -31,7 +33,7 @@
 export default {
   props: {
     showDialog: {
-      require: true,
+      required: true,
       type: Boolean,
     },
     imageSrc: {},
@@ -41,17 +43,17 @@ export default {
       dialog: this.showDialog,
     };
   },
-  methods: {
-    changeDialog() {
-      this.dialog = false;
-      this.$emit('toggleDialog');
-    },
-  },
   watch: {
     showDialog() {
       if (this.dialog !== this.showDialog) {
         this.dialog = this.showDialog;
       }
+    },
+  },
+  methods: {
+    changeDialog() {
+      this.dialog = false;
+      this.$emit('toggleDialog');
     },
   },
 };

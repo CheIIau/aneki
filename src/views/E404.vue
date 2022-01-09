@@ -7,7 +7,9 @@
               md6
               text-center
               fill-height>
-        <h1 class="text-h3 primary--text">Страница не найдена</h1>
+        <h1 class="text-h3 primary--text">
+          Страница не найдена
+        </h1>
         <br>
         <hr>
         <br>
@@ -16,7 +18,9 @@
                outlined
                color="primary"
                class="v-btn"
-               :to="'/'"><span class="v-btn__content"> Прочь отсюда</span></v-btn>
+               :to="'/'">
+          <span class="v-btn__content"> Прочь отсюда</span>
+        </v-btn>
       </v-flex>
     </v-layout>
   </v-container>

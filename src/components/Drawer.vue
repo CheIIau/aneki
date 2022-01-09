@@ -22,15 +22,15 @@
         </v-list-item>
       </v-list>
       <template v-slot:append>
-        <div class="pa-2 mb-9"
-             v-if="isUserLoggedIn">
-          <v-btn @click="onLogout"
-                 block>
+        <div v-if="isUserLoggedIn"
+             class="pa-2 mb-9">
+          <v-btn block
+                 @click="onLogout">
             <v-icon>mdi-logout</v-icon>Выйти
           </v-btn>
         </div>
-        <div class="pa-2 mb-9"
-             v-else>
+        <div v-else
+             class="pa-2 mb-9">
           <v-btn :to="'/login'"
                  block>
             <v-icon>mdi-login</v-icon>Войти
@@ -44,26 +44,26 @@
 <script>
 import { mapActions } from 'vuex';
 export default {
+  props: {
+    showDrawer: { type: Boolean, required: true },
+    links: { type: Array, required: true },
+    isUserLoggedIn: { type: Boolean, required: true },
+  },
   data() {
     return {
       drawer: this.showDrawer,
     };
   },
-  props: {
-    showDrawer: { type: Boolean, require: true },
-    links: { type: Array, require: true },
-    isUserLoggedIn: { type: Boolean, require: true },
+  watch: {
+    showDrawer() {
+      this.drawer = !this.drawer;
+    },
   },
   methods: {
     ...mapActions(['logoutUser']),
     onLogout() {
       this.logoutUser();
       this.$router.push('/');
-    },
-  },
-  watch: {
-    showDrawer() {
-      this.drawer = !this.drawer;
     },
   },
 };

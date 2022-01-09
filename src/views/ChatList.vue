@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-flex md10
+    <v-flex v-if="!loading"
+            md10
             offset-md1
             offset-sm2
             offset-xs1
             sm8
-            v-if="!loading"
             xs10>
       <div class="text-right">
         <span class="hidden-sm-and-down">&nbsp;</span>
@@ -17,7 +17,9 @@
                    dark
                    v-bind="attrs"
                    v-on="on"
-                   @click="showCreateChatModal">Создать новый чат</v-btn>
+                   @click="showCreateChatModal">
+              Создать новый чат
+            </v-btn>
             <v-btn block
                    class="hidden-md-and-up mb-3"
                    color="primary"
@@ -33,12 +35,12 @@
       </div>
     </v-flex>
 
-    <v-flex md6
+    <v-flex v-if="!loading"
+            md6
             offset-md3
             offset-sm2
             offset-xs1
             sm8
-            v-if="!loading"
             xs10>
       <v-list subheader>
         <v-subheader>Все чаты</v-subheader>
@@ -53,9 +55,13 @@
             <v-list-item-content>
               <v-list-item-title v-text="chat.chatName"></v-list-item-title>
             </v-list-item-content>
-            <v-list-item-action-text v-text="chat.userCount">Количество участников</v-list-item-action-text>
+            <v-list-item-action-text v-text="chat.userCount">
+              Количество участников
+            </v-list-item-action-text>
             <v-list-item-action>
-              <v-icon color="green lighten-2">mdi-account-group</v-icon>
+              <v-icon color="green lighten-2">
+                mdi-account-group
+              </v-icon>
             </v-list-item-action>
           </v-list-item>
         </v-list-item-group>
@@ -63,15 +69,15 @@
     </v-flex>
     <spinner v-else></spinner>
 
-    <modal :showDialog="showDialog"
+    <modal :show-dialog="showDialog"
            @toggleDialog="toggleDialog">
       <template v-slot:header>
         Напишите имя чата
       </template>
       <template v-slot:modal-body>
-        <v-text-field prepend-icon="mdi-chat-plus-outline"
+        <v-text-field v-model="chatName"
+                      prepend-icon="mdi-chat-plus-outline"
                       label="Имя чата"
-                      v-model="chatName"
                       :rules="chatNameRules"
                       hide-details="auto"></v-text-field>
       </template>
@@ -92,6 +98,10 @@ import { mapGetters, mapActions } from 'vuex';
 import Spinner from '@/components/Spinner.vue';
 import Modal from '@/components/Modal.vue';
 export default {
+  components: {
+    Spinner,
+    Modal,
+  },
   data() {
     return {
       chatName: '',
@@ -102,10 +112,6 @@ export default {
         (v) => /^[A-zА-я0-9]+([-_]?[A-zА-я0-9]+){0,2}$/i.test(v) || 'Имя чата не может содержать  символы кроме - и _',
       ],
     };
-  },
-  components: {
-    Spinner,
-    Modal,
   },
   computed: {
     ...mapGetters({ loading: 'loading', chats: 'getChats' }),

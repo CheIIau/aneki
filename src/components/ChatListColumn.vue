@@ -5,7 +5,7 @@
                  :key="i"
                  :to="/chat/ + chat.chatId">
       <v-list-item-content>
-        <v-list-item-title>{{chat.chatName}}</v-list-item-title>
+        <v-list-item-title>{{ chat.chatName }}</v-list-item-title>
       </v-list-item-content>
       <v-list-item-action>
         <v-icon>mdi-chat</v-icon>
@@ -16,13 +16,13 @@
 
 <script>
 export default {
-  created() {
-    this.$store.dispatch('loadChats');
-  },
   computed: {
     chats() {
       return this.$store.getters.getChats;
     },
+  },
+  created() {
+    this.$store.dispatch('loadChats');
   },
 };
 </script>

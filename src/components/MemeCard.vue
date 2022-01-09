@@ -4,15 +4,17 @@
       <spinner v-if="loading"></spinner>
       <v-img v-show="!loading"
              contain
+             :src="imageUrl"
              @load="isLoaded"
-             @loadstart="startLoading"
-             :src="imageUrl"></v-img>
+             @loadstart="startLoading"></v-img>
       <v-card-text>
         <v-row class="mr-1 mb-1 mt-2"
                app>
-          <v-card-subtitle>Автор: {{author}} </v-card-subtitle>
+          <v-card-subtitle>Автор: {{ author }} </v-card-subtitle>
           <v-spacer></v-spacer>
-          <v-card-subtitle class="d-none d-sm-flex"> Выложено: {{formatDate(time)}} </v-card-subtitle>
+          <v-card-subtitle class="d-none d-sm-flex">
+            Выложено: {{ formatDate(time) }}
+          </v-card-subtitle>
         </v-row>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -21,7 +23,7 @@
                  @click="onChangeVote(id, 'up')">
             <v-icon>mdi-arrow-up-bold</v-icon>
           </v-btn>
-          <span> {{rating}}</span>
+          <span> {{ rating }}</span>
           <v-btn icon
                  :color="arrowDownColor"
                  @click="onChangeVote(id, 'down')">
@@ -38,10 +40,8 @@ import { mapGetters, mapActions } from 'vuex';
 import { formatDate } from '@/functions/index.js';
 import Spinner from '@/components/Spinner.vue';
 export default {
-  data() {
-    return {
-      loading: false,
-    };
+  components: {
+    Spinner,
   },
   props: {
     imageUrl: {
@@ -65,8 +65,10 @@ export default {
       required: true,
     },
   },
-  components: {
-    Spinner,
+  data() {
+    return {
+      loading: false,
+    };
   },
   computed: {
     ...mapGetters(['isUserLoggedIn']),

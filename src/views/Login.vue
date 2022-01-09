@@ -11,30 +11,32 @@
             <v-toolbar-title>Войти</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form v-model="valid"
-                    ref="form"
+            <v-form ref="form"
+                    v-model="valid"
                     validation>
-              <v-text-field prepend-icon="mdi-at"
+              <v-text-field v-model="email"
+                            prepend-icon="mdi-at"
                             name="email"
                             label="Email"
                             type="email"
-                            v-model="email"
                             :rules="emailRules"></v-text-field>
-              <v-text-field prepend-icon="mdi-lock"
+              <v-text-field v-model="password"
+                            prepend-icon="mdi-lock"
                             name="password"
                             label="Пароль"
                             type="current-password"
                             :counter="true"
-                            v-model="password"
                             :rules="passwordRules"></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="primary"
-                   @click="onSubmit"
                    :loading="loading"
-                   :disabled="!valid || loading">Войти</v-btn>
+                   :disabled="!valid || loading"
+                   @click="onSubmit">
+              Войти
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -61,6 +63,11 @@ export default {
       return this.$store.getters.loading;
     },
   },
+  created() {
+    if (this.$route.query['loginError']) {
+      this.$store.dispatch('setError', 'Войдите, чтобы получить доступ к этой странице');
+    }
+  },
   methods: {
     onSubmit() {
       if (this.$refs.form.validate()) {
@@ -76,11 +83,6 @@ export default {
           .catch(() => {});
       }
     },
-  },
-  created() {
-    if (this.$route.query['loginError']) {
-      this.$store.dispatch('setError', 'Войдите, чтобы получить доступ к этой странице');
-    }
   },
 };
 </script>

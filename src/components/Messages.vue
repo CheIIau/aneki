@@ -1,16 +1,20 @@
 <template>
   <div>
-    <div class="message"
-         v-for="(message,i) in messages"
+    <div v-for="(message,i) in messages"
          :key="message.key"
+         class="message"
          :class="{own: message.userName == user.nickname}">
-      <div class="username"
-           v-if="i>0 && messages[i-1].userName != message.userName">{{message.userName}}</div>
-      <div class="username"
-           v-else-if="i === 0">{{message.userName}}</div>
+      <div v-if="i>0 && messages[i-1].userName != message.userName"
+           class="username">
+        {{ message.userName }}
+      </div>
+      <div v-else-if="i === 0"
+           class="username">
+        {{ message.userName }}
+      </div>
       <div style="margin-top: 5px"></div>
       <div class="content">
-        <div>{{message.body}}</div>
+        <div>{{ message.body }}</div>
       </div>
     </div>
   </div>
@@ -19,13 +23,14 @@
 <script>
 import { mapGetters } from 'vuex';
 export default {
-  data() {
-    return {};
-  },
   props: {
     messages: {
+      required: true,
       type: Array,
     },
+  },
+  data() {
+    return {};
   },
   computed: {
     ...mapGetters(['user']),

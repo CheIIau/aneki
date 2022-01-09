@@ -6,11 +6,11 @@
             offset-xs1
             sm6
             xs10>
-      <v-text-field label="Поиск анека по автору"
+      <v-text-field v-model.trim="searchQuery"
+                    label="Поиск анека по автору"
                     hide-details="auto"
                     placeholder="Введите ник автора"
                     :rules="searchRules"
-                    v-model.trim="searchQuery"
                     class="pb-9">
         <v-icon slot="prepend"
                 color="primary">
@@ -26,10 +26,10 @@
             sm6
             xs10>
       <anek-card v-for="anek in aneks"
-                 :author="anek.author"
-                 :body="anek.body"
                  :id="anek.id"
                  :key="anek.id"
+                 :author="anek.author"
+                 :body="anek.body"
                  :rating="anek.rating"
                  :time="anek.time"
                  :title="anek.title"></anek-card>
@@ -45,25 +45,15 @@ import Spinner from '@/components/Spinner.vue';
 import { debounce } from '@/functions/index.js';
 
 export default {
-  props: ['user'],
+  components: { AnekCard, Spinner },
   data() {
     return {
       searchQuery: '',
       searchRules: [(v) => !v || v.length >= 3 || 'Запрос должен быть длиннее 3 символов'],
     };
   },
-  components: { AnekCard, Spinner },
   computed: {
     ...mapGetters({ loading: 'loading', aneks: 'getSearchedAneks' }),
-  },
-  methods: {
-    ...mapActions(['fetchSearchedAneks']),
-  },
-  created() {
-    this.fetchSearchedAneks = debounce(this.fetchSearchedAneks, 400);
-    if (this.$route.query?.user !== '') {
-      this.searchQuery = this.$route.query.user;
-    }
   },
   watch: {
     searchQuery() {
@@ -72,6 +62,15 @@ export default {
         window.history.pushState(null, document.title, `${window.location.pathname}?user=${this.searchQuery}`);
       }
     },
+  },
+  created() {
+    this.fetchSearchedAneks = debounce(this.fetchSearchedAneks, 400);
+    if (this.$route.query?.user !== '') {
+      this.searchQuery = this.$route.query.user;
+    }
+  },
+  methods: {
+    ...mapActions(['fetchSearchedAneks']),
   },
 };
 </script>

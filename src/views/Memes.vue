@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-flex md10
+    <v-flex v-if="!loading"
+            md10
             offset-md1
             offset-sm2
             offset-xs1
             sm8
-            v-if="!loading"
             xs10>
       <v-flex v-if="!isUserLoggedIn"
               md10
@@ -36,7 +36,9 @@
                      color="primary"
                      dark
                      v-bind="attrs"
-                     v-on="on">Сортировать</v-btn>
+                     v-on="on">
+                Сортировать
+              </v-btn>
               <v-btn block
                      class="hidden-md-and-up mb-3"
                      color="primary"
@@ -48,10 +50,12 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item :key="index"
-                           class="pointer"
-                           v-for="(item, index) in items">
-                <v-list-item-title @click="sortMemes(item.sort)">{{ item.title }}</v-list-item-title>
+              <v-list-item v-for="(item, index) in items"
+                           :key="index"
+                           class="pointer">
+                <v-list-item-title @click="sortMemes(item.sort)">
+                  {{ item.title }}
+                </v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -62,7 +66,9 @@
           <v-btn class="hidden-sm-and-down"
                  color="primary"
                  dark
-                 @click="triggerUpload">Загрузить мемес</v-btn>
+                 @click="triggerUpload">
+            Загрузить мемес
+          </v-btn>
           <v-btn block
                  class="hidden-md-and-up mb-3"
                  color="primary"
@@ -71,37 +77,37 @@
             Загрузить мемес &nbsp;
             <v-icon>mdi-file-image-plus-outline</v-icon>
           </v-btn>
-          <input @change="onFileChange"
-                 ref="fileInput"
+          <input ref="fileInput"
                  type="file"
                  style="display:none"
-                 accept="image/*">
+                 accept="image/*"
+                 @change="onFileChange">
         </div>
       </v-flex>
 
-      <v-flex md6
+      <v-flex v-if="!loading"
+              md6
               offset-md3
               offset-sm2
               offset-xs1
               sm8
-              v-if="!loading"
               xs10
               class="memes-content"
               :class="authMessageClasses">
         <meme-card v-for="meme in memes"
-                   :author="meme.author"
-                   :imageUrl="meme.imageUrl"
+                   :id="meme.id"
                    :key="meme.imageUrl"
+                   :author="meme.author"
+                   :image-url="meme.imageUrl"
                    :rating="meme.rating"
-                   :time="meme.time"
-                   :id="meme.id"></meme-card>
+                   :time="meme.time"></meme-card>
       </v-flex>
     </v-flex>
 
     <spinner v-else></spinner>
 
-    <modal :imageSrc="imageSrc"
-           :showDialog="showDialog"
+    <modal :image-src="imageSrc"
+           :show-dialog="showDialog"
            @toggleDialog="toggleDialog">
       <template v-slot:header>
         Ваш мемес
@@ -128,6 +134,11 @@ import MemeCard from '@/components/MemeCard.vue';
 import Spinner from '@/components/Spinner.vue';
 
 export default {
+  components: {
+    Modal,
+    MemeCard,
+    Spinner,
+  },
   data() {
     return {
       alert: true,
@@ -141,11 +152,6 @@ export default {
       ],
       sort: 'new',
     };
-  },
-  components: {
-    Modal,
-    MemeCard,
-    Spinner,
   },
   computed: {
     ...mapGetters({

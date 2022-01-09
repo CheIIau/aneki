@@ -15,21 +15,25 @@
       </router-link>
       <transition appear
                   appear-active-class="fade-enter-active">
-        <div class='app-bar_title pointer'>
+        <div class="app-bar_title pointer">
           <router-link tag="span"
-                       to="/">неки</router-link>
+                       to="/">
+            неки
+          </router-link>
         </div>
       </transition>
     </div>
     <v-spacer></v-spacer>
     <v-toolbar-items v-if="!loadingUser"
                      class="hidden-md-and-down">
-      <v-btn elevation="0"
-             color="primary"
-             v-for="link in links"
+      <v-btn v-for="link in links"
              :key="link.title"
+             elevation="0"
+             color="primary"
              :to="link.url">
-        <v-icon left>{{link.icon}}</v-icon>{{link.title}}
+        <v-icon left>
+          {{ link.icon }}
+        </v-icon>{{ link.title }}
       </v-btn>
     </v-toolbar-items>
     <div v-else>
@@ -42,8 +46,8 @@
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
       <v-btn v-if="isUserLoggedIn && !loadingUser"
-             @click="onLogout"
-             text>
+             text
+             @click="onLogout">
         <span class="mr-2">Выйти</span>
         <v-icon>mdi-logout</v-icon>
       </v-btn>
@@ -53,9 +57,20 @@
         <span class="mr-2">Войти</span>
         <v-icon>mdi-login</v-icon>
       </v-btn>
-      <div class="blank"
-           v-else>&nbsp;</div>
+      <div v-else
+           class="blank">
+        &nbsp;
+      </div>
     </v-toolbar-items>
+    <v-switch v-model="$vuetify.theme.dark"
+              inset
+              hide-details
+              color="indigo darken-3"
+              flat
+              class="hidden-md-and-up"></v-switch>
+    <v-icon class="hidden-md-and-up">
+      mdi-weather-night
+    </v-icon>
   </v-app-bar>
 </template>
 
@@ -63,8 +78,8 @@
 import { mapGetters, mapActions } from 'vuex';
 export default {
   props: {
-    links: { type: Array, require: true },
-    isUserLoggedIn: { type: Boolean, require: true },
+    links: { type: Array, required: true },
+    isUserLoggedIn: { type: Boolean, required: true },
   },
 
   computed: {

@@ -64,6 +64,7 @@ export default {
           { title: 'Закладки', icon: 'mdi-bookmark', url: '/favs' },
           { title: 'Добавить анек', icon: 'mdi-file-plus', url: '/new' },
           { title: 'Мемесы', icon: 'mdi-one-up', url: '/memes' },
+          { title: 'Чат', icon: 'mdi-chat', url: '/chatlist' },
         ];
       }
       return [

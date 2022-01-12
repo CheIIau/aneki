@@ -62,12 +62,13 @@
         &nbsp;
       </div>
     </v-toolbar-items>
-    <v-switch v-model="$vuetify.theme.dark"
+    <v-switch v-model="darkThemeSwitchValue"
               inset
               hide-details
               color="indigo darken-3"
               flat
-              class="hidden-md-and-up"></v-switch>
+              class="hidden-md-and-up"
+              @change="changeTheme"></v-switch>
     <v-icon class="hidden-md-and-up">
       mdi-weather-night
     </v-icon>
@@ -76,12 +77,17 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { changeTheme } from '../functions/darkmode';
 export default {
   props: {
     links: { type: Array, required: true },
     isUserLoggedIn: { type: Boolean, required: true },
   },
-
+  data() {
+    return {
+      darkThemeSwitchValue: this.$vuetify.theme.dark,
+    };
+  },
   computed: {
     ...mapGetters(['loading', 'loadingUser']),
   },
@@ -97,6 +103,7 @@ export default {
     toggleDrawer() {
       this.$emit('toggleDrawer');
     },
+    changeTheme,
   },
 };
 </script>

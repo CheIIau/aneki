@@ -187,7 +187,6 @@ export default {
   bottom: 0;
   height: 3.9rem;
   width: 100%;
-  background-color: #fff;
   box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, 0.2);
 }
 .typer input[type='text'] {
@@ -205,7 +204,6 @@ export default {
   height: calc(100vh - 8.3rem);
   overflow-y: auto;
   padding: 10px;
-  background-color: #f2f2f2;
 }
 .chat-layout {
   padding: 0;

@@ -43,6 +43,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import Drawer from '@/components/Drawer.vue';
 import HeaderApp from '@/components/HeaderApp.vue';
+import { changeTheme } from './functions/darkmode';
 export default {
   name: 'App',
   components: {
@@ -85,14 +86,17 @@ export default {
         }, 4000);
     },
   },
+  created() {
+    if (localStorage.getItem('darkTheme') === 'true') {
+      this.$vuetify.theme.dark = true;
+    }
+  },
   methods: {
     ...mapActions(['clearError']),
     toggleDrawer() {
       this.showDrawer = !this.showDrawer;
     },
-    changeTheme() {
-      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-    },
+    changeTheme,
   },
 };
 </script>
@@ -103,6 +107,6 @@ export default {
 }
 .dark-mode {
   bottom: 15px;
-  right: 15px;
+  left: 15px;
 }
 </style>

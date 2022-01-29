@@ -13,7 +13,7 @@ app.set('port', port);
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: 'true' }));
+app.use(express.urlencoded({ extended: true }));
 
 app.listen(port, () => {
   console.log('server is running');

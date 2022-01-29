@@ -70,7 +70,7 @@ export default {
         (v) => /^[A-zА-я0-9]+([-_]?[A-zА-я0-9]+){0,2}$/i.test(v) || 'Никнейм не может содержать  символы кроме - и _',
       ],
       email: '',
-      emailRules: [(v) => !!v || 'Нужно ввести Email', (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'],
+      emailRules: [(v) => !!v || 'Нужно ввести Email', (v) => /.+@.+\..+/.test(v) || 'Email должен быть валидным'],
       password: '',
       passwordRules: [
         (v) => !!v || 'Нужно ввести пароль',

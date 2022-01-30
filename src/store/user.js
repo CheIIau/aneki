@@ -84,9 +84,9 @@ export default {
       commit('setLoadingUser', false);
     },
 
-    logoutUser({ commit }) {
+    async logoutUser({ commit }) {
       const auth = getAuth();
-      signOut(auth).catch((error) => {
+      await signOut(auth).catch((error) => {
         commit('setError', error.message);
         throw error;
       });

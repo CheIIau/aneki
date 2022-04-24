@@ -8,10 +8,14 @@
         <div class="text--primary anek-body">
           {{ body }}
         </div>
-        <v-row class="mr-1 mb-1 mt-2"
-               app>
-          <router-link class="author-link"
-                       :to="{ path: 'search', query: { user: `${author}` } }">
+        <v-row
+          class="mr-1 mb-1 mt-2"
+          app
+        >
+          <router-link
+            class="author-link"
+            :to="{ path: 'search', query: { user: `${author}` } }"
+          >
             <v-card-subtitle>Автор: {{ author }} </v-card-subtitle>
           </router-link>
           <v-spacer></v-spacer>
@@ -20,22 +24,27 @@
           </v-card-subtitle>
         </v-row>
         <v-card-actions>
-          <v-btn icon
-                 :loading="localLoading"
-                 :color="bookmarkColor"
-                 @click="changeBookmarkStatus(id)">
+          <v-btn
+            icon
+            :color="bookmarkColor"
+            @click="changeBookmarkStatus(id)"
+          >
             <v-icon>mdi-bookmark</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn icon
-                 :color="arrowUpColor"
-                 @click="onChangeVote(id, 'up')">
+          <v-btn
+            icon
+            :color="arrowUpColor"
+            @click="onChangeVote(id, 'up')"
+          >
             <v-icon>mdi-arrow-up-bold</v-icon>
           </v-btn>
           <span> {{ rating }}</span>
-          <v-btn icon
-                 :color="arrowDownColor"
-                 @click="onChangeVote(id, 'down')">
+          <v-btn
+            icon
+            :color="arrowDownColor"
+            @click="onChangeVote(id, 'down')"
+          >
             <v-icon>mdi-arrow-down-bold</v-icon>
           </v-btn>
         </v-card-actions>
@@ -111,10 +120,12 @@ export default {
   word-wrap: break-word;
   font-family: inherit;
 }
+
 .author-link {
   color: #777777;
   text-decoration: none;
 }
+
 .author-link:hover {
   text-decoration: underline;
 }

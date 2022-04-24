@@ -1,36 +1,48 @@
 <template>
   <v-app>
-    <drawer :show-drawer="showDrawer"
-            :links="links"
-            :is-user-logged-in="isUserLoggedIn"></drawer>
-    <header-app :links="links"
-                :is-user-logged-in="isUserLoggedIn"
-                @toggleDrawer="toggleDrawer"></header-app>
+    <drawer
+      :show-drawer="showDrawer"
+      :links="links"
+      :is-user-logged-in="isUserLoggedIn"
+    ></drawer>
+    <header-app
+      :links="links"
+      :is-user-logged-in="isUserLoggedIn"
+      @toggleDrawer="toggleDrawer"
+    ></header-app>
     <v-main class="mt-6">
-      <transition name="fade-transition"
-                  mode="out-in"
-                  appear
-                  appear-active-class="fade-transition">
+      <transition
+        name="fade-transition"
+        mode="out-in"
+        appear
+        appear-active-class="fade-transition"
+      >
         <router-view />
       </transition>
-      <v-btn class="mx-2 dark-mode hidden-sm-and-down"
-             fab
-             fixed
-             dark
-             small
-             @click="changeTheme">
+      <v-btn
+        class="mx-2 dark-mode hidden-sm-and-down"
+        fab
+        fixed
+        dark
+        small
+        @click="changeTheme"
+      >
         <v-icon>mdi-weather-night</v-icon>
       </v-btn>
     </v-main>
     <template v-if="error">
-      <v-snackbar v-model="snackbar"
-                  :multi-line="true"
-                  color="error">
+      <v-snackbar
+        v-model="snackbar"
+        :multi-line="true"
+        color="error"
+      >
         {{ error }}
         <template v-slot:action>
-          <v-btn dark
-                 text
-                 @click="clearError">
+          <v-btn
+            dark
+            text
+            @click="clearError"
+          >
             Закрыть
           </v-btn>
         </template>
@@ -105,6 +117,7 @@ export default {
 .pointer {
   cursor: pointer;
 }
+
 .dark-mode {
   bottom: 15px;
   left: 15px;

@@ -16,7 +16,11 @@
             class="author-link"
             :to="{ path: 'search', query: { user: `${author}` } }"
           >
-            <v-card-subtitle>Автор: {{ author }} </v-card-subtitle>
+            <v-card-subtitle>
+              <v-icon>
+                mdi-account-circle
+              </v-icon> <span class="anek-card__username">{{ author }}</span>
+            </v-card-subtitle>
           </router-link>
           <v-spacer></v-spacer>
           <v-card-subtitle class="d-none d-sm-flex">
@@ -114,11 +118,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .anek-body {
   white-space: pre-line;
   word-wrap: break-word;
   font-family: inherit;
+}
+
+.anek-card__username {
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .author-link {
@@ -127,6 +137,6 @@ export default {
 }
 
 .author-link:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 </style>

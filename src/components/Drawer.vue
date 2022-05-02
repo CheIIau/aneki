@@ -1,18 +1,24 @@
 <template>
-  <v-card class="mx-auto"
-          tile
-          width="300">
-    <v-navigation-drawer v-model="drawer"
-                         app
-                         dark
-                         src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
-                         temporary>
+  <v-card
+    class="mx-auto"
+    tile
+    width="300"
+  >
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      dark
+      src="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
+      temporary
+    >
       <v-list>
         <v-subheader>Анеки</v-subheader>
-        <v-list-item v-for="link of links"
-                     :key="link.title"
-                     :to="link.url"
-                     link>
+        <v-list-item
+          v-for="link of links"
+          :key="link.title"
+          :to="link.url"
+          link
+        >
           <v-list-item-icon>
             <v-icon>{{ link.icon }}</v-icon>
           </v-list-item-icon>
@@ -22,18 +28,33 @@
         </v-list-item>
       </v-list>
       <template v-slot:append>
-        <div v-if="isUserLoggedIn"
-             class="pa-2 mb-9">
-          <v-btn block
-                 @click="onLogout">
+        <div
+          v-if="isUserLoggedIn"
+          class="pa-2 mb-9"
+        >
+          <v-btn
+            block
+            @click="onLogout"
+          >
             <v-icon>mdi-logout</v-icon>Выйти
           </v-btn>
         </div>
-        <div v-else
-             class="pa-2 mb-9">
-          <v-btn :to="'/login'"
-                 block>
+        <div
+          v-else
+          class="pa-2 mb-9"
+        >
+          <v-btn
+            :to="'/login'"
+            block
+            class="mb-2"
+          >
             <v-icon>mdi-login</v-icon>Войти
+          </v-btn>
+          <v-btn
+            :to="'/registration'"
+            block
+          >
+            <v-icon>mdi-account-plus</v-icon>Регистрация
           </v-btn>
         </div>
       </template>

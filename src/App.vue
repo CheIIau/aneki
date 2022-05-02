@@ -86,7 +86,7 @@ export default {
         { title: 'Поиск', icon: 'mdi-magnify', url: '/search' },
         { title: 'Мемесы', icon: 'mdi-one-up', url: '/memes' },
         { title: 'Чат', icon: 'mdi-chat', url: '/chatlist' },
-        { title: 'Регистрация', icon: 'mdi-account-plus', url: '/registration' },
+        // { title: 'Регистрация', icon: 'mdi-account-plus', url: '/registration' },
       ];
     },
   },

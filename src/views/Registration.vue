@@ -1,53 +1,71 @@
 <template>
   <v-container fluid>
-    <v-layout align-self-baseline
-              justify-center>
-      <v-flex xs12
-              sm8
-              md6>
+    <v-layout
+      align-self-baseline
+      justify-center
+    >
+      <v-flex
+        xs12
+        sm8
+        md6
+      >
         <v-card class="elevation-12">
-          <v-toolbar dark
-                     color="primary">
+          <v-toolbar
+            dark
+            color="primary"
+          >
             <v-toolbar-title>Регистрация</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form ref="formReg"
-                    v-model="valid"
-                    lazy-validation>
-              <v-text-field v-model="nickname"
-                            prepend-icon="mdi-account"
-                            name="nickname"
-                            label="Никнейм"
-                            type="nickname"
-                            :rules="nicknameRules"></v-text-field>
-              <v-text-field v-model="email"
-                            prepend-icon="mdi-at"
-                            name="email"
-                            label="Email"
-                            type="email"
-                            :rules="emailRules"></v-text-field>
-              <v-text-field v-model="password"
-                            prepend-icon="mdi-lock"
-                            name="password"
-                            label="Пароль"
-                            type="new-password"
-                            :counter="true"
-                            :rules="passwordRules"></v-text-field>
-              <v-text-field v-model="confirmPassword"
-                            prepend-icon="mdi-lock"
-                            name="confirm-password"
-                            label="Подтвердите пароль"
-                            type="new-password"
-                            :counter="true"
-                            :rules="confirmPasswordRules"></v-text-field>
+            <v-form
+              ref="formReg"
+              v-model="valid"
+              lazy-validation
+            >
+              <v-text-field
+                v-model="nickname"
+                prepend-icon="mdi-account"
+                name="nickname"
+                label="Никнейм"
+                type="nickname"
+                :rules="nicknameRules"
+              ></v-text-field>
+              <v-text-field
+                v-model="email"
+                prepend-icon="mdi-at"
+                name="email"
+                label="Email"
+                type="email"
+                :rules="emailRules"
+              ></v-text-field>
+              <v-text-field
+                v-model="password"
+                prepend-icon="mdi-lock"
+                name="password"
+                label="Пароль"
+                type="password"
+                :counter="true"
+                :rules="passwordRules"
+              ></v-text-field>
+              <v-text-field
+                v-model="confirmPassword"
+                prepend-icon="mdi-lock"
+                name="confirm-password"
+                label="Подтвердите пароль"
+                type="password"
+                :counter="true"
+                :rules="confirmPasswordRules"
+              ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary"
-                   :loading="loading"
-                   :disabled="!valid || loading"
-                   @click="onSubmit">
+            <v-btn
+              color="primary"
+              :loading="loading"
+              :disabled="!valid || loading"
+              @click="onSubmit"
+            >
               Регистрация
             </v-btn>
           </v-card-actions>

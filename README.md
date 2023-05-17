@@ -2,6 +2,8 @@
 Wanna to upload you joke or meme. Welcome to Aneki. Build on Vue framework with additional use of vuex and vue-router.
 ### [The link](https://aneki-af274.web.app/) 
 
+Links below does not work anymore due to heroku has become a paid service
+
 ### [Mirror](https://anek-i.herokuapp.com/) (may take a while to load)
 
 ### [The site with glassmorphism design](https://aneki-glass.herokuapp.com/) (may take a while to load)
